@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Collector : MonoBehaviour
 {
-    public List<GameObject> gameObjectList = new List<GameObject>();
+    public List<GameObject> backpack = new List<GameObject>();
 
-    public Transform spawnPoint;
+    [SerializeField]
+    private Transform spawnPoint;
     private GameObject prefab;
 
     [SerializeField] 
@@ -24,29 +24,13 @@ public class Collector : MonoBehaviour
 
     private void Start()
     {
+        Collector[] otherCollectors = GameObject.FindObjectsOfType<Collector>();
+        for (int i = 0; i < otherCollectors.Length; i++)
+            Physics.IgnoreCollision(otherCollectors[i].GetComponent<Collider>(), GetComponent<Collider>());
+
         StartCoroutine(CollectEnum());
     }
 
-    IEnumerator CollectEnum()
-    {
-        while (true)
-        {
-            if (isCollecting)
-            {
-                Collect();
-            }
-            yield return new WaitForSeconds(1 / collectRate);
-        }
-    }
-
-    public void ReOrder()
-    {
-        for (int i = 0; i < gameObjectList.Count; i++)
-        {
-            gameObjectList[i].transform.localPosition = new Vector3(0, paddingY * i, 0);
-        }
-    }
-    
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Generator"))
@@ -71,22 +55,49 @@ public class Collector : MonoBehaviour
             isCollecting = false;
         }
     }
+    IEnumerator CollectEnum()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1 / collectRate);
+            if (isCollecting)
+            {
+                Collect();
+            }
+        }
+    }
 
     void Collect()
     {
-        if (gameObjectList.Count < storageLimit && generator.gameObjectList.Count > 0)
+        if (backpack.Count < storageLimit && generator.resourceList.Count > 0)
         {
             GameObject temp = Instantiate(prefab, spawnPoint);
-            //temp.transform.position = new Vector3(spawnPoint.transform.position.x, gameObjectList.Count * paddingY, spawnPoint.transform.position.z);
-            gameObjectList.Add(temp);
+            temp.transform.position = new Vector3(spawnPoint.transform.position.x, backpack.Count * paddingY, spawnPoint.transform.position.z);
+            backpack.Add(temp);
             generator.RemoveLast();
             ReOrder();
         }
     }
 
+    private void ReOrder()
+    {
+        for (int i = 0; i < backpack.Count; i++)
+        {
+            backpack[i].transform.localPosition = new Vector3(0, paddingY * i, 0);
+        }
+    }
+
     public void RemoveLast()
     {
-        Destroy(gameObjectList[gameObjectList.Count - 1]);
-        gameObjectList.RemoveAt(gameObjectList.Count - 1);
+        Destroy(backpack[backpack.Count - 1]);
+        backpack.RemoveAt(backpack.Count - 1);
+        ReOrder();
+    }
+        
+    public void Remove(GameObject resource)
+    {
+        Destroy(resource);
+        backpack.Remove(resource);
+        ReOrder();
     }
 }

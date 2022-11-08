@@ -50,15 +50,14 @@ public class ShopManager : MonoBehaviour
         {
             if (isCollecting)
             {
-                 foreach (var item in collector.gameObjectList.ToArray())
+                 foreach (var item in collector.backpack.ToArray())
                  {
                      if (item.gameObject.CompareTag(resourceName) && isCollecting)
                      {
                         currentApple++;
-                        collector.gameObjectList.Remove(item);
+                        collector.backpack.Remove(item);
                         Destroy(item);
                         Debug.Log(currentApple);
-                        collector.ReOrder();
                         yield return new WaitForSeconds(0.5f / collectRate);
                      }
                  }

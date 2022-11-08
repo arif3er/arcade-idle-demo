@@ -6,12 +6,12 @@ using UnityEngine;
 public class Generator : MonoBehaviour
 {
     [HideInInspector] 
-    public List<GameObject> gameObjectList = new List<GameObject>();
+    public List<GameObject> resourceList = new List<GameObject>();
 
     public GameObject prefab;
     [SerializeField] private Transform spawnPoint;
-
-     public float rate;
+        
+     public float spawnRate;
      public float storageLimit;
      public int stackLimit;
 
@@ -28,28 +28,25 @@ public class Generator : MonoBehaviour
     {
         while (true)
         {
-            int rowCount = gameObjectList.Count / stackLimit;
-            if (gameObjectList.Count < storageLimit)
+            yield return new WaitForSeconds(1 / spawnRate);
+            if (resourceList.Count < storageLimit)
             {
+                int rowCount = resourceList.Count / stackLimit;
                 GameObject temp = Instantiate(prefab, spawnPoint);
                 temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),
-                                                     (gameObjectList.Count % stackLimit) * paddingY,
+                                                     (resourceList.Count % stackLimit) * paddingY,
                                                      spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
-                gameObjectList.Add(temp);   
-                
+                resourceList.Add(temp);   
             }
-            yield return new WaitForSeconds(1/rate);
         }
-    }
-
-    
+    }   
 
     public void RemoveLast()
     {
-        if (gameObjectList.Count > 0)
+        if (resourceList.Count > 0)
         {
-            Destroy(gameObjectList[gameObjectList.Count - 1]);
-            gameObjectList.RemoveAt(gameObjectList.Count - 1);
+            Destroy(resourceList[resourceList.Count - 1]);
+            resourceList.RemoveAt(resourceList.Count - 1);
         }
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - Apple
   - Water
   - Ground
+  - Worker
   layers:
   - Default
   - TransparentFX

@@ -15,7 +15,7 @@ public class Upgrader : MonoBehaviour
 
     private void Start()
     {
-        rateText.text = "Water Generator Rate : " + waterGenerator.rate.ToString();
+        rateText.text = "Water Generator Rate : " + waterGenerator.spawnRate.ToString();
     }
 
     private void OnTriggerStay(Collider other)
@@ -37,7 +37,7 @@ public class Upgrader : MonoBehaviour
     public void UpgradeRate()
     {
         Debug.Log("Rate increased.");
-        waterGenerator.rate++;
-        rateText.text = "Water Generator Rate : " + waterGenerator.rate.ToString();
+        waterGenerator.spawnRate++;
+        rateText.text = "Water Generator Rate : " + waterGenerator.spawnRate.ToString();
     }
 }

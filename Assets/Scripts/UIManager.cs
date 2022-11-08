@@ -20,13 +20,5 @@ public class UIManager : MonoBehaviour
             Instance = this;
     }
 
-    public void UpdatePlantText(int amount, int limit)
-    {
-        plantText.text = "Need Water \n" + amount + " / " + limit;
-    }
-
-    public void UpdatePlantBar(float amount)
-    {
-        image.fillAmount = amount;
-    }
+    
 }

@@ -48,9 +48,9 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector2 movementInput = playerInput.PlayerMain.Move.ReadValue<Vector2>();
-        // Vector3 move = (cameraMain.forward * movementInput.y + cameraMain.right * movementInput.x);
-        //move.y = 0f;
-        Vector3 move = new Vector3(movementInput.x, 0f, movementInput.y);
+        Vector3 move = (cameraMain.forward * movementInput.y + cameraMain.right * movementInput.x);
+        move.y = 0f;
+       // Vector3 move = new Vector3(movementInput.x, 0f, movementInput.y);
         controller.Move(move * Time.deltaTime * playerSpeed);
 
         if (move != Vector3.zero)
@@ -67,11 +67,11 @@ public class PlayerController : MonoBehaviour
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
 
-        /*if (movementInput != Vector2.zero)
+        if (movementInput != Vector2.zero)
         {
             Quaternion rotation = Quaternion.Euler(new Vector3(child.localEulerAngles.x, cameraMain.localEulerAngles.y, child.eulerAngles.z));
             child.rotation = Quaternion.Lerp(child.rotation, rotation, Time.deltaTime * rotationSpeed);
-        }*/
+        }
     }
 
 }
