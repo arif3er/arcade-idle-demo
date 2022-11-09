@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance { get; private set; }
+
     private PlayerInput playerInput;
 
     private CharacterController controller;
@@ -12,17 +14,21 @@ public class PlayerController : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
 
-    [SerializeField]
-    private float playerSpeed = 2.0f;
-    [SerializeField]
-    private float rotationSpeed = .0f;
-    [SerializeField]
-    private float jumpHeight = 1.0f;
-    [SerializeField]
-    private float gravityValue = -9.81f;
+    public bool isMoving;
+
+    [SerializeField] private float playerSpeed = 2.0f;
+    [SerializeField] private float rotationSpeed = .0f;
+    [SerializeField] private float jumpHeight = 1.0f;
+    [SerializeField] private float gravityValue = -9.81f;
+
 
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
+
         playerInput = new PlayerInput();
         controller = GetComponent<CharacterController>();
         cameraMain = Camera.main.transform;
@@ -50,13 +56,23 @@ public class PlayerController : MonoBehaviour
         Vector2 movementInput = playerInput.PlayerMain.Move.ReadValue<Vector2>();
         Vector3 move = (cameraMain.forward * movementInput.y + cameraMain.right * movementInput.x);
         move.y = 0f;
-       // Vector3 move = new Vector3(movementInput.x, 0f, movementInput.y);
+        // Vector3 move = new Vector3(movementInput.x, 0f, movementInput.y);
         controller.Move(move * Time.deltaTime * playerSpeed);
+
+        /*
+        if (move.x > 0 || move.z > 0)
+            isMoving = true;
+        else
+            isMoving = false;
+        */
 
         if (move != Vector3.zero)
         {
+            isMoving = true;
             gameObject.transform.forward = move;
         }
+        else
+            isMoving = false;
 
         // Changes the height position of the player..
         if (playerInput.PlayerMain.Jump.triggered && groundedPlayer)
@@ -73,5 +89,4 @@ public class PlayerController : MonoBehaviour
             child.rotation = Quaternion.Lerp(child.rotation, rotation, Time.deltaTime * rotationSpeed);
         }
     }
-
 }

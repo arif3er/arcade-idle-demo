@@ -7,14 +7,14 @@ public class Upgrader : MonoBehaviour
 {
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private TextMeshProUGUI rateText;
-
-
-    [SerializeField] private float storageLimit;
+    [SerializeField] private GameObject workerPrefab;
+    [SerializeField] private Transform spawnPoint;
 
     public Generator waterGenerator;
 
     private void Start()
     {
+        upgradePanel.SetActive(false);
         rateText.text = "Water Generator Rate : " + waterGenerator.spawnRate.ToString();
     }
 
@@ -39,5 +39,13 @@ public class Upgrader : MonoBehaviour
         Debug.Log("Rate increased.");
         waterGenerator.spawnRate++;
         rateText.text = "Water Generator Rate : " + waterGenerator.spawnRate.ToString();
+        Player.Instance.SpendMoney(100);
+    }
+
+    public void SpawnWorker()
+    {
+        Debug.Log("WorkerSpawned.");
+        Instantiate(workerPrefab, spawnPoint);
+        Player.Instance.SpendMoney(250);
     }
 }

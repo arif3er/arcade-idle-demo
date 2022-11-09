@@ -7,10 +7,9 @@ public class FollowWP : MonoBehaviour
     public GameObject[] waypoints;
     private int currentWP = 0;
 
-    [SerializeField]
-    private float speed = 10f;
-    [SerializeField]
-    private float rotationSpeed = 10f;
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float rotationSpeed = 10f;
+
 
     private void Update()
     {

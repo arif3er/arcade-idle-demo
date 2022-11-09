@@ -28,7 +28,6 @@ public class BuyArea : MonoBehaviour
         UpdateUI(currentResource, resourceNeed);
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -46,11 +45,17 @@ public class BuyArea : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            inAreaPlayer = true;
+            if (!PlayerController.Instance.isMoving)
+                inAreaPlayer = true;
+            else
+                inAreaPlayer = false;
         }
         if (other.gameObject.CompareTag("Worker"))
         {
-            inAreaWorker = true;
+            if (!PlayerController.Instance.isMoving)
+                inAreaWorker = true;
+            else
+                inAreaWorker = false;
         }
     }
 
@@ -75,7 +80,7 @@ public class BuyArea : MonoBehaviour
             {
                 StopAllCoroutines();
                 lockedObject.SetActive(true);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             if (inAreaPlayer && playerCollector.backpack.Count > 0)
             {
@@ -103,7 +108,7 @@ public class BuyArea : MonoBehaviour
             {
                 StopAllCoroutines();
                 lockedObject.SetActive(true);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             if (inAreaWorker && workerCollector.backpack.Count > 0)
             {
@@ -131,7 +136,7 @@ public class BuyArea : MonoBehaviour
             {
                 StopAllCoroutines();
                 lockedObject.SetActive(true);
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
             if (inArea && collector.backpack.Count > 0)
             {

@@ -6,21 +6,18 @@ public class Collector : MonoBehaviour
 {
     public List<GameObject> backpack = new List<GameObject>();
 
-    [SerializeField]
-    private Transform spawnPoint;
-    private GameObject prefab;
+    [SerializeField] private Transform spawnPoint;
 
-    [SerializeField] 
-    private float collectRate;
-    [SerializeField]
-    private int storageLimit;
-
-    [Range(0f, 1f)] 
-    public float paddingY;
-
-    private bool isCollecting;
+    [SerializeField] private float collectRate;
+    [SerializeField] private int storageLimit;
+    [Range(0f, 1f)] public float paddingY;
 
     private Generator generator;
+    private Converter converter;
+    private GameObject prefab;
+
+    private bool isCollectingG;
+    private bool isCollectingC;
 
     private void Start()
     {
@@ -28,7 +25,8 @@ public class Collector : MonoBehaviour
         for (int i = 0; i < otherCollectors.Length; i++)
             Physics.IgnoreCollision(otherCollectors[i].GetComponent<Collider>(), GetComponent<Collider>());
 
-        StartCoroutine(CollectEnum());
+        StartCoroutine(ResourceEnum());
+        StartCoroutine(MoneyEnum());
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,13 +36,27 @@ public class Collector : MonoBehaviour
             generator = other.GetComponent<Generator>();
             prefab = generator.prefab;
         }
+        if (other.gameObject.CompareTag("Converter"))
+        {
+            converter = other.GetComponent<Converter>();
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Generator"))
         {
-            isCollecting = true;
+            if (!PlayerController.Instance.isMoving)    
+                isCollectingG = true;
+            else
+                isCollectingG = false;
+        }
+        if (other.gameObject.CompareTag("Converter"))
+        {
+            if (!PlayerController.Instance.isMoving)
+                isCollectingC = true;
+            else
+                isCollectingC = false;
         }
     }
 
@@ -52,22 +64,39 @@ public class Collector : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Generator"))
         {
-            isCollecting = false;
+            isCollectingG = false;
+        }
+        if (other.gameObject.CompareTag("Converter"))
+        {
+            isCollectingC = false;
         }
     }
-    IEnumerator CollectEnum()
+
+    IEnumerator ResourceEnum()
     {
         while (true)
         {
             yield return new WaitForSeconds(1 / collectRate);
-            if (isCollecting)
+            if (isCollectingG)
             {
-                Collect();
+                CollectResource();
             }
         }
     }
 
-    void Collect()
+    IEnumerator MoneyEnum()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.5f / collectRate);
+            if (isCollectingC)
+            {
+                CollectMoney();
+            }
+        }
+    }
+
+    void CollectResource()
     {
         if (backpack.Count < storageLimit && generator.resourceList.Count > 0)
         {
@@ -76,6 +105,15 @@ public class Collector : MonoBehaviour
             backpack.Add(temp);
             generator.RemoveLast();
             ReOrder();
+        }
+    }
+    
+    private void CollectMoney()
+    {
+        if (converter.moneyList.Count > 0)
+        {
+            Player.Instance.AddMoney();
+            converter.RemoveLast();
         }
     }
 

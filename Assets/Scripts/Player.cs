@@ -1,0 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    public static Player Instance { get; private set; }
+
+    [SerializeField] private TextMeshProUGUI moneyText;
+
+    public int currenetMoney;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
+
+        UpdateMoneyText();
+    }
+
+    public void AddMoney()
+    {
+        currenetMoney += 100;
+        UpdateMoneyText();
+    }
+
+    public void SpendMoney(int amount)
+    {
+        if (currenetMoney >= amount)
+        {
+            currenetMoney -= amount;
+            UpdateMoneyText();
+        }
+
+        if (currenetMoney < amount)
+        {
+            Debug.Log("Dont have enough money !");
+        }
+    }
+
+    void UpdateMoneyText()
+    {
+        moneyText.text = "$ " + currenetMoney.ToString();
+
+    }
+}

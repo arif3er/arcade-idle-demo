@@ -1,6 +1,5 @@
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ShopManager : MonoBehaviour
@@ -10,13 +9,15 @@ public class ShopManager : MonoBehaviour
 
     private Collector collector;
 
-    public int currentApple = 0;
+    public string fruitName;
+    public int currentFruit = 0;
     public int currentMoney = 0;
+
     private bool isCollecting;
 
     private void Start()
     {
-        StartCoroutine(Collect("Apple"));
+        StartCoroutine(Collect(fruitName));
         StartCoroutine(ProduceMoney());
     }
 
@@ -32,7 +33,10 @@ public class ShopManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            isCollecting = true;
+            if (!PlayerController.Instance.isMoving)
+                isCollecting = true;
+            else
+                isCollecting = false;
         }
     }
 
@@ -44,7 +48,7 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    IEnumerator Collect(string resourceName)
+    IEnumerator Collect(string fruitName)
     {
         while (true)
         {
@@ -52,12 +56,11 @@ public class ShopManager : MonoBehaviour
             {
                  foreach (var item in collector.backpack.ToArray())
                  {
-                     if (item.gameObject.CompareTag(resourceName) && isCollecting)
+                     if (item.gameObject.CompareTag(fruitName) && isCollecting)
                      {
-                        currentApple++;
+                        currentFruit++;
                         collector.backpack.Remove(item);
                         Destroy(item);
-                        Debug.Log(currentApple);
                         yield return new WaitForSeconds(0.5f / collectRate);
                      }
                  }
@@ -70,11 +73,10 @@ public class ShopManager : MonoBehaviour
     {
         while (true)
         {
-            if (currentApple > 0)
+            if (currentFruit > 0)
             {
-                currentApple--;
+                currentFruit--;
                 currentMoney++;
-                Debug.Log("Money : " + currentMoney);
             }
             yield return new WaitForSeconds(2f);
         }
