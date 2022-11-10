@@ -1,54 +1,241 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Converter : MonoBehaviour
 {
     [HideInInspector]
-    public List<GameObject> moneyList = new List<GameObject>();
+    public List<GameObject> endProductList = new List<GameObject>();
 
+    public GameObject endProductPrefab;
     public Transform spawnPoint;
-    public GameObject prefab;
 
-    [SerializeField] private ShopManager shopManager;
+    [SerializeField] private string source1Tag;
+    [SerializeField] private string source2Tag;
+    [SerializeField] private string source3Tag;
+    [SerializeField] private int source1Needed;
+    [SerializeField] private int source2Needed;
+    [SerializeField] private int source3Needed;
+    [SerializeField] private int currentSource1;
+    [SerializeField] private int currentSource2;
+    [SerializeField] private int currentSource3;
 
-    public float rate;
-    public int moneyLimit;
-    public int stackLimit;
+    [SerializeField] private bool oneSource;
+    [SerializeField] private bool twoSource;
+    [SerializeField] private bool threeSource;
+
+    private Collector playerCollector;
+    private Collector workerCollector;
+
+    [SerializeField] private float convertRate;
+    [SerializeField] private float consumeRate;
+    [SerializeField] private int stackLimit;
 
     [SerializeField][Range(0f, 1f)] private float paddingY;
     [SerializeField][Range(0f, 5f)] private float paddingX;
     [SerializeField][Range(0f, 5f)] private float paddingZ;
 
+    private bool inAreaP;
+    private bool inAreaW;
+
     private void Start()
     {
+        StartCoroutine(Consume());
         StartCoroutine(Convert());
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            playerCollector = other.GetComponent<Collector>();
+        }
+        if (other.gameObject.CompareTag("Worker"))
+        {
+            workerCollector = other.GetComponent<Collector>();
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            inAreaP = true;
+        }
+        if (other.gameObject.CompareTag("Worker"))
+        {
+            inAreaW = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            inAreaP = false;
+        }
+        if (other.gameObject.CompareTag("Worker"))
+        {
+            inAreaW = false;
+        }
+    }
+
+    IEnumerator Consume()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1/ consumeRate);
+
+            //Consumes resources from player
+            if (inAreaP)
+            {
+                if ((oneSource || twoSource || threeSource) && currentSource1 < source1Needed)
+                {
+                    for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
+                    {
+                        GameObject go = playerCollector.backpack[i];
+                        if (go.CompareTag(source1Tag) && inAreaP)
+                        {
+                            currentSource1++;
+                            playerCollector.RemoveOne(go);
+                            UpdateUI();
+                            yield return new WaitForSeconds(1 / consumeRate);
+                        }
+                    }
+                }
+
+                if ((twoSource || threeSource) && currentSource2 < source2Needed)
+                {
+                    for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
+                    {
+                        GameObject go = playerCollector.backpack[i];
+                        if (go.CompareTag(source2Tag) && inAreaP)
+                        {
+                            currentSource2++;
+                            playerCollector.RemoveOne(go);
+                            UpdateUI();
+                            yield return new WaitForSeconds(1 / consumeRate);
+                        }
+                    }
+                }
+
+                if (threeSource && currentSource3 < source3Needed)
+                {
+                    for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
+                    {
+                        GameObject go = playerCollector.backpack[i];
+                        if (go.CompareTag(source3Tag) && inAreaP)
+                        {
+                            currentSource3++;
+                            playerCollector.RemoveOne(go);
+                            UpdateUI();
+                            yield return new WaitForSeconds(1 / consumeRate);
+                        }
+                    }
+                }
+            }
+
+            //Consumes resources from worker
+            if (inAreaW)
+            {
+                if ((oneSource || twoSource || threeSource) && currentSource1 < source1Needed)
+                {
+                    for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
+                    {
+                        GameObject go = workerCollector.backpack[i];
+                        if (go.CompareTag(source1Tag) && inAreaW)
+                        {
+                            currentSource1++;
+                            workerCollector.RemoveOne(go);
+                            UpdateUI();
+                            yield return new WaitForSeconds(1 / consumeRate);
+                        }
+                    }
+                }
+
+                if ((twoSource || threeSource) && currentSource2 < source2Needed)
+                {
+                    for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
+                    {
+                        GameObject go = workerCollector.backpack[i];
+                        if (go.CompareTag(source2Tag) && inAreaW)
+                        {
+                            currentSource2++;
+                            workerCollector.RemoveOne(go);
+                            UpdateUI();
+                            yield return new WaitForSeconds(1 / consumeRate);
+                        }
+                    }
+                }
+
+                if (threeSource && currentSource3 < source3Needed)
+                {
+                    for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
+                    {
+                        GameObject go = workerCollector.backpack[i];
+                        if (go.CompareTag(source3Tag) && inAreaW)
+                        {
+                            currentSource3++;
+                            workerCollector.RemoveOne(go);
+                            UpdateUI();
+                            yield return new WaitForSeconds(1 / consumeRate);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     IEnumerator Convert()
     {
         while (true)
         {
-            yield return new WaitForSeconds(1 / rate);
-            if (shopManager.currentFruit > 0 && moneyList.Count < moneyLimit)
+            yield return new WaitForSeconds(1 / convertRate);
+            if (oneSource && currentSource1 > 0)
             {
-                shopManager.currentFruit--;
-                int rowCount = moneyList.Count / stackLimit;
-                GameObject temp = Instantiate(prefab, spawnPoint);
-                temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),
-                                                     (moneyList.Count % stackLimit) * paddingY,
-                                                     spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
-                moneyList.Add(temp);
-            }   
+                currentSource1--;
+                ProduceEndProduct();
+            }
+
+            if (twoSource && currentSource1 > 0 && currentSource2 > 0)
+            {
+                currentSource1--;
+                currentSource2--;
+                ProduceEndProduct();
+            }
+
+            if (threeSource && currentSource1 > 0 && currentSource2 > 0 && currentSource3 > 0)
+            {
+                currentSource1--;
+                currentSource2--;
+                currentSource3--;
+                ProduceEndProduct();
+            }
         }
     }
-   
+
+    private void ProduceEndProduct()
+    {
+        int rowCount = endProductList.Count / stackLimit;
+        GameObject temp = Instantiate(endProductPrefab, spawnPoint);
+        temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),
+                                             (endProductList.Count % stackLimit) * paddingY,
+                                             spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
+        endProductList.Add(temp);
+    }
+
     public void RemoveLast()
     {
-        if (moneyList.Count > 0)
+        if (endProductList.Count > 0)
         {
-            Destroy(moneyList[moneyList.Count - 1]);
-            moneyList.RemoveAt(moneyList.Count - 1);
+            Destroy(endProductList[endProductList.Count - 1]);
+            endProductList.RemoveAt(endProductList.Count - 1);
         }
+    }
+
+    private void UpdateUI()
+    {
+        Debug.Log("UI Updated");
     }
 }

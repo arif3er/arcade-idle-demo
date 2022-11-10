@@ -26,7 +26,6 @@ public class Collector : MonoBehaviour
             Physics.IgnoreCollision(otherCollectors[i].GetComponent<Collider>(), GetComponent<Collider>());
 
         StartCoroutine(ResourceEnum());
-        StartCoroutine(MoneyEnum());
     }
 
     private void OnTriggerEnter(Collider other)
@@ -84,18 +83,6 @@ public class Collector : MonoBehaviour
         }
     }
 
-    IEnumerator MoneyEnum()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(0.5f / collectRate);
-            if (isCollectingC)
-            {
-                CollectMoney();
-            }
-        }
-    }
-
     void CollectResource()
     {
         if (backpack.Count < storageLimit && generator.resourceList.Count > 0)
@@ -105,15 +92,6 @@ public class Collector : MonoBehaviour
             backpack.Add(temp);
             generator.RemoveLast();
             ReOrder();
-        }
-    }
-    
-    private void CollectMoney()
-    {
-        if (converter.moneyList.Count > 0)
-        {
-            Player.Instance.AddMoney();
-            converter.RemoveLast();
         }
     }
 
@@ -132,7 +110,7 @@ public class Collector : MonoBehaviour
         ReOrder();
     }
         
-    public void Remove(GameObject resource)
+    public void RemoveOne(GameObject resource)
     {
         Destroy(resource);
         backpack.Remove(resource);

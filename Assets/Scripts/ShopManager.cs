@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class ShopManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI appleText;
+    [SerializeField] private TextMeshProUGUI fruitText;
     [SerializeField] private float collectRate;
 
     private Collector collector;
 
     public string fruitName;
+    public int fruitPrice = 0;
     public int currentFruit = 0;
-    public int currentMoney = 0;
 
-    private bool isCollecting;
+    private bool inArea;
 
     private void Start()
     {
         StartCoroutine(Collect(fruitName));
-        StartCoroutine(ProduceMoney());
+        UpdateUI();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -34,9 +34,9 @@ public class ShopManager : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             if (!PlayerController.Instance.isMoving)
-                isCollecting = true;
+                inArea = true;
             else
-                isCollecting = false;
+                inArea = false;
         }
     }
 
@@ -44,7 +44,7 @@ public class ShopManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            isCollecting = false;
+            inArea = false;
         }
     }
 
@@ -52,33 +52,41 @@ public class ShopManager : MonoBehaviour
     {
         while (true)
         {
-            if (isCollecting)
-            {
-                 foreach (var item in collector.backpack.ToArray())
-                 {
-                     if (item.gameObject.CompareTag(fruitName) && isCollecting)
-                     {
-                        currentFruit++;
-                        collector.backpack.Remove(item);
-                        Destroy(item);
-                        yield return new WaitForSeconds(0.5f / collectRate);
-                     }
-                 }
-            }
             yield return new WaitForSeconds(0.5f / collectRate);
+            if (inArea)
+            {
+                for (int i = collector.backpack.Count - 1; i >= 0; i--)
+                {
+                    GameObject go = collector.backpack[i];
+                    if (go.CompareTag(fruitName) && inArea)
+                    {
+                        currentFruit++;
+                        collector.backpack.Remove(go);
+                        Destroy(go);
+                        UpdateUI();
+                        yield return new WaitForSeconds(0.5f / collectRate);
+                    }
+                }
+            }
+        }
+    }
+    
+    public void Sell()
+    {
+        if (currentFruit > 0)
+        {
+            currentFruit--;
+            UpdateUI();
+            Player.Instance.AddMoney(fruitPrice);
+        }
+        else
+        {
+            Debug.Log("No fruit left.");
         }
     }
 
-    IEnumerator ProduceMoney()
+    private void UpdateUI()
     {
-        while (true)
-        {
-            if (currentFruit > 0)
-            {
-                currentFruit--;
-                currentMoney++;
-            }
-            yield return new WaitForSeconds(2f);
-        }
+        fruitText.text = currentFruit.ToString();
     }
 }

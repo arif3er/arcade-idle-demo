@@ -21,9 +21,9 @@ public class Player : MonoBehaviour
         UpdateMoneyText();
     }
 
-    public void AddMoney()
+    public void AddMoney(int amount)
     {
-        currenetMoney += 100;
+        currenetMoney += amount;
         UpdateMoneyText();
     }
 
@@ -41,9 +41,8 @@ public class Player : MonoBehaviour
         }
     }
 
-    void UpdateMoneyText()
+    public void UpdateMoneyText()
     {
         moneyText.text = "$ " + currenetMoney.ToString();
-
     }
 }

@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2784314, g: 0.58431375, b: 0.8980393, a: 1}
+  m_Color: {r: 0.3137255, g: 0.7803922, b: 0.2392157, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 4152161685467350757}
   - component: {fileID: 4152161685467350762}
   m_Layer: 0
-  m_Name: WaterIcon
+  m_Name: MoneyIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -288,18 +288,18 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4152161685467350760}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.000053348245}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000059604645}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4152161685524726638}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -400, y: 0}
-  m_SizeDelta: {x: 300, y: 300}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 75, y: -150}
+  m_SizeDelta: {x: 200, y: 200}
+  m_Pivot: {x: 0, y: 1}
 --- !u!222 &4152161685467350757
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -328,7 +328,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bb3cacefb1a2a9a4ea33bcac03dc639c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1ea98ce5017a73c409d456b3f88977ad, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -365,7 +365,7 @@ RectTransform:
   m_GameObject: {fileID: 4152161685524726639}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.003, y: 0.003, z: 0.003}
+  m_LocalScale: {x: 0.004, y: 0.004, z: 0.004}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4152161685467350763}
@@ -474,10 +474,9 @@ MonoBehaviour:
   lockedObject: {fileID: 4152161686099750042}
   text: {fileID: 4152161686114208095}
   bar: {fileID: 4152161685208425355}
-  resourceName: Water
-  resourceNeed: 10
+  moneySpended: 0
+  moneyNeed: 100
   collectRate: 2
-  currentResource: 0
 --- !u!65 &1256988740
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -489,8 +488,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4, y: 1, z: 2}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 5.6, y: 0.5, z: 3.1}
+  m_Center: {x: -0.003784895, y: 0, z: 0.014483929}
 --- !u!1 &4152161686114208093
 GameObject:
   m_ObjectHideFlags: 0
@@ -524,11 +523,11 @@ RectTransform:
   m_Father: {fileID: 4152161685524726638}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 250, y: 0}
-  m_SizeDelta: {x: 750, y: 300}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -75, y: -100}
+  m_SizeDelta: {x: 1050, y: 300}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &4152161686114208094
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -557,7 +556,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '0/50
+  m_text: '25 / 100 $
 
 '
   m_isRightToLeft: 0
@@ -568,8 +567,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294631587
-  m_fontColor: {r: 0.6392157, g: 0.87843144, b: 0.9803922, a: 1}
+    rgba: 4282238544
+  m_fontColor: {r: 0.3137255, g: 0.77647066, b: 0.2392157, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -586,8 +585,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 200
-  m_fontSizeBase: 200
+  m_fontSize: 150
+  m_fontSizeBase: 150
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -773,7 +772,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 68335351626904335, guid: 746c1378a066aae48a0200b7faa28033, type: 3}
       propertyPath: m_Name
-      value: AppleGenerator
+      value: AppleTree
       objectReference: {fileID: 0}
     - target: {fileID: 68335351626904335, guid: 746c1378a066aae48a0200b7faa28033, type: 3}
       propertyPath: m_IsActive
