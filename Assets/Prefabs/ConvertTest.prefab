@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7014413957762690515}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.01, y: 0, z: 0}
+  m_LocalPosition: {x: -1.101, y: 0, z: -0.353}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -97,12 +97,10 @@ MonoBehaviour:
   source1Tag: Water
   source2Tag: Fertilizer
   source3Tag: 
-  source1Needed: 5
-  source2Needed: 5
-  source3Needed: 0
   currentSource1: 0
   currentSource2: 0
   currentSource3: 0
+  stockLimit: 5
   oneSource: 0
   twoSource: 1
   threeSource: 0
@@ -110,8 +108,8 @@ MonoBehaviour:
   consumeRate: 2
   stackLimit: 5
   paddingY: 0.1
-  paddingX: 1
-  paddingZ: 0
+  paddingX: 0
+  paddingZ: 1
 --- !u!1 &7014413959140010493
 GameObject:
   m_ObjectHideFlags: 0

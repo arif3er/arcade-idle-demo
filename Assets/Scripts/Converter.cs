@@ -14,12 +14,11 @@ public class Converter : MonoBehaviour
     [SerializeField] private string source1Tag;
     [SerializeField] private string source2Tag;
     [SerializeField] private string source3Tag;
-    [SerializeField] private int source1Needed;
-    [SerializeField] private int source2Needed;
-    [SerializeField] private int source3Needed;
     [SerializeField] private int currentSource1;
     [SerializeField] private int currentSource2;
     [SerializeField] private int currentSource3;
+    [SerializeField] private int stockLimit;
+
 
     [SerializeField] private bool oneSource;
     [SerializeField] private bool twoSource;
@@ -61,11 +60,13 @@ public class Converter : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            inAreaP = true;
+            if (!PlayerController.Instance.isMoving)
+                inAreaP = true;
         }
         if (other.gameObject.CompareTag("Worker"))
         {
-            inAreaW = true;
+            if (!PlayerController.Instance.isMoving)
+                inAreaW = false;
         }
     }
 
@@ -90,7 +91,7 @@ public class Converter : MonoBehaviour
             //Consumes resources from player
             if (inAreaP)
             {
-                if ((oneSource || twoSource || threeSource) && currentSource1 < source1Needed)
+                if ((oneSource || twoSource || threeSource) && currentSource1 < stockLimit)
                 {
                     for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
                     {
@@ -105,7 +106,7 @@ public class Converter : MonoBehaviour
                     }
                 }
 
-                if ((twoSource || threeSource) && currentSource2 < source2Needed)
+                if ((twoSource || threeSource) && currentSource2 < stockLimit)
                 {
                     for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
                     {
@@ -120,7 +121,7 @@ public class Converter : MonoBehaviour
                     }
                 }
 
-                if (threeSource && currentSource3 < source3Needed)
+                if (threeSource && currentSource3 < stockLimit)
                 {
                     for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
                     {
@@ -139,7 +140,7 @@ public class Converter : MonoBehaviour
             //Consumes resources from worker
             if (inAreaW)
             {
-                if ((oneSource || twoSource || threeSource) && currentSource1 < source1Needed)
+                if ((oneSource || twoSource || threeSource) && currentSource1 < stockLimit)
                 {
                     for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
                     {
@@ -154,7 +155,7 @@ public class Converter : MonoBehaviour
                     }
                 }
 
-                if ((twoSource || threeSource) && currentSource2 < source2Needed)
+                if ((twoSource || threeSource) && currentSource2 < stockLimit)
                 {
                     for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
                     {
@@ -169,7 +170,7 @@ public class Converter : MonoBehaviour
                     }
                 }
 
-                if (threeSource && currentSource3 < source3Needed)
+                if (threeSource && currentSource3 < stockLimit)
                 {
                     for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
                     {
