@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI moneyText;
 
-    public int currenetMoney;
+    public int currenetMoney = 1000;
 
     private void Awake()
     {

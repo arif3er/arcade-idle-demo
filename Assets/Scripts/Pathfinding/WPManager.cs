@@ -17,7 +17,7 @@ public class WPManager : MonoBehaviour
     public Link[] links;
     public Graph graph = new Graph();
 
-    private void Start()
+    private void Awake()
     {
         if (waypoints.Length > 0)
         {

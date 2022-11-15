@@ -61,8 +61,7 @@ public class ShopManager : MonoBehaviour
                     if (go.CompareTag(fruitName) && inArea)
                     {
                         currentFruit++;
-                        collector.backpack.Remove(go);
-                        Destroy(go);
+                        collector.RemoveOne(go);
                         UpdateUI();
                         yield return new WaitForSeconds(0.5f / collectRate);
                     }

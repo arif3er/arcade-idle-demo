@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class Converter : MonoBehaviour
@@ -9,76 +8,62 @@ public class Converter : MonoBehaviour
     public List<GameObject> endProductList = new List<GameObject>();
 
     public GameObject endProductPrefab;
+    public string endProductName;
     public Transform spawnPoint;
 
     [SerializeField] private string source1Tag;
     [SerializeField] private string source2Tag;
     [SerializeField] private string source3Tag;
-    [SerializeField] private int currentSource1;
-    [SerializeField] private int currentSource2;
-    [SerializeField] private int currentSource3;
-    [SerializeField] private int stockLimit;
+    private int currentSource1;
+    private int currentSource2;
+    private int currentSource3;
 
+    enum SoureNeed { one, two, three }
+    [SerializeField] SoureNeed soureNeed;
 
     [SerializeField] private bool oneSource;
     [SerializeField] private bool twoSource;
     [SerializeField] private bool threeSource;
 
-    private Collector playerCollector;
-    private Collector workerCollector;
+    public List<Collector> collectorList = new List<Collector>();
+    private Collider m_collider;
 
     [SerializeField] private float convertRate;
     [SerializeField] private float consumeRate;
+
+    #region Positioning
     [SerializeField] private int stackLimit;
-
     [SerializeField][Range(0f, 1f)] private float paddingY;
-    [SerializeField][Range(0f, 5f)] private float paddingX;
-    [SerializeField][Range(0f, 5f)] private float paddingZ;
+    [SerializeField][Range(-2f, 2f)] private float paddingX;
+    [SerializeField][Range(-2f, 2f)] private float paddingZ;
+    #endregion
 
-    private bool inAreaP;
-    private bool inAreaW;
-
-    private void Start()
+    private void OnEnable()
     {
+        m_collider = GetComponent<Collider>();
+
         StartCoroutine(Consume());
         StartCoroutine(Convert());
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnDisable()
     {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            playerCollector = other.GetComponent<Collector>();
-        }
-        if (other.gameObject.CompareTag("Worker"))
-        {
-            workerCollector = other.GetComponent<Collector>();
-        }
+        StopAllCoroutines();
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Worker"))
         {
-            if (!PlayerController.Instance.isMoving)
-                inAreaP = true;
-        }
-        if (other.gameObject.CompareTag("Worker"))
-        {
-            if (!PlayerController.Instance.isMoving)
-                inAreaW = false;
+            collectorList.Add(other.GetComponent<Collector>());
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Worker"))
         {
-            inAreaP = false;
-        }
-        if (other.gameObject.CompareTag("Worker"))
-        {
-            inAreaW = false;
+            collectorList.Remove(other.GetComponent<Collector>());
         }
     }
 
@@ -86,101 +71,60 @@ public class Converter : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(1/ consumeRate);
-
-            //Consumes resources from player
-            if (inAreaP)
+            yield return new WaitForSeconds(1 / consumeRate);
+            
+            if ((oneSource || twoSource || threeSource))
             {
-                if ((oneSource || twoSource || threeSource) && currentSource1 < stockLimit)
+                foreach (var c in collectorList.ToArray())    
                 {
-                    for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
+                    Collector collector = c.GetComponent<Collector>();
+                    for (int i = collector.backpack.Count - 1; i >= 0; i--)
                     {
-                        GameObject go = playerCollector.backpack[i];
-                        if (go.CompareTag(source1Tag) && inAreaP)
+                        GameObject go = collector.backpack[i];
+                        if (go.CompareTag(source1Tag) && m_collider.bounds.Contains(c.gameObject.transform.position))
                         {
                             currentSource1++;
-                            playerCollector.RemoveOne(go);
+                            collector.RemoveOne(go);
                             UpdateUI();
-                            yield return new WaitForSeconds(1 / consumeRate);
+                            yield return new WaitForSeconds(0.5f / consumeRate);
                         }
                     }
                 }
 
-                if ((twoSource || threeSource) && currentSource2 < stockLimit)
+                if ((twoSource || threeSource))
                 {
-                    for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
+                    foreach (var c in collectorList.ToArray())
                     {
-                        GameObject go = playerCollector.backpack[i];
-                        if (go.CompareTag(source2Tag) && inAreaP)
+                        Collector collector = c.GetComponent<Collector>();
+                        for (int i = collector.backpack.Count - 1; i >= 0; i--)
                         {
-                            currentSource2++;
-                            playerCollector.RemoveOne(go);
-                            UpdateUI();
-                            yield return new WaitForSeconds(1 / consumeRate);
+                            GameObject go = collector.backpack[i];
+                            if (go.CompareTag(source1Tag) && m_collider.bounds.Contains(c.gameObject.transform.position))
+                            {
+                                currentSource2++;
+                                collector.RemoveOne(go);
+                                UpdateUI();
+                                yield return new WaitForSeconds(0.5f / consumeRate);
+                            }
                         }
                     }
                 }
 
-                if (threeSource && currentSource3 < stockLimit)
+                if ((threeSource))
                 {
-                    for (int i = playerCollector.backpack.Count - 1; i >= 0; i--)
+                    foreach (var c in collectorList.ToArray())
                     {
-                        GameObject go = playerCollector.backpack[i];
-                        if (go.CompareTag(source3Tag) && inAreaP)
+                        Collector collector = c.GetComponent<Collector>();
+                        for (int i = collector.backpack.Count - 1; i >= 0; i--)
                         {
-                            currentSource3++;
-                            playerCollector.RemoveOne(go);
-                            UpdateUI();
-                            yield return new WaitForSeconds(1 / consumeRate);
-                        }
-                    }
-                }
-            }
-
-            //Consumes resources from worker
-            if (inAreaW)
-            {
-                if ((oneSource || twoSource || threeSource) && currentSource1 < stockLimit)
-                {
-                    for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
-                    {
-                        GameObject go = workerCollector.backpack[i];
-                        if (go.CompareTag(source1Tag) && inAreaW)
-                        {
-                            currentSource1++;
-                            workerCollector.RemoveOne(go);
-                            UpdateUI();
-                            yield return new WaitForSeconds(1 / consumeRate);
-                        }
-                    }
-                }
-
-                if ((twoSource || threeSource) && currentSource2 < stockLimit)
-                {
-                    for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
-                    {
-                        GameObject go = workerCollector.backpack[i];
-                        if (go.CompareTag(source2Tag) && inAreaW)
-                        {
-                            currentSource2++;
-                            workerCollector.RemoveOne(go);
-                            UpdateUI();
-                            yield return new WaitForSeconds(1 / consumeRate);
-                        }
-                    }
-                }
-
-                if (threeSource && currentSource3 < stockLimit)
-                {
-                    for (int i = workerCollector.backpack.Count - 1; i >= 0; i--)
-                    {
-                        GameObject go = workerCollector.backpack[i];
-                        if (go.CompareTag(source3Tag) && inAreaW)
-                        {
-                            currentSource3++;
-                            workerCollector.RemoveOne(go);
-                            UpdateUI();
-                            yield return new WaitForSeconds(1 / consumeRate);
+                            GameObject go = collector.backpack[i];
+                            if (go.CompareTag(source1Tag) && m_collider.bounds.Contains(c.gameObject.transform.position))
+                            {
+                                currentSource3++;
+                                collector.RemoveOne(go);
+                                UpdateUI();
+                                yield return new WaitForSeconds(0.5f / consumeRate);
+                            }
                         }
                     }
                 }
@@ -219,10 +163,11 @@ public class Converter : MonoBehaviour
     private void ProduceEndProduct()
     {
         int rowCount = endProductList.Count / stackLimit;
-        GameObject temp = Instantiate(endProductPrefab, spawnPoint);
+        GameObject temp = ObjectPooler.Instance.SpawnFromPool(endProductName, spawnPoint.transform.position, spawnPoint.transform.rotation);
         temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),
                                              (endProductList.Count % stackLimit) * paddingY,
                                              spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
+        temp.transform.SetParent(spawnPoint.transform);
         endProductList.Add(temp);
     }
 
@@ -230,7 +175,8 @@ public class Converter : MonoBehaviour
     {
         if (endProductList.Count > 0)
         {
-            Destroy(endProductList[endProductList.Count - 1]);
+            endProductList[endProductList.Count - 1].gameObject.SetActive(false);
+            //Destroy(endProductList[endProductList.Count - 1]);
             endProductList.RemoveAt(endProductList.Count - 1);
         }
     }

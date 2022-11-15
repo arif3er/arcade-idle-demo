@@ -4,21 +4,22 @@ using UnityEngine;
 
 public class FollowPath : MonoBehaviour
 {
-    Transform goal;
-    float speed = 5f;
-    float accuracy = 1f;
-    float rotSpeed = 2f;
+    private Transform goal;
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private float accuracy = 1f;
+    [SerializeField] private float rotSpeed = 2f;
     public GameObject wpManager;
-    GameObject[] wps;
-    GameObject currentNode;
-    int currentWP = 0;
-    Graph g;
+    private GameObject[] wps;
+    private GameObject currentNode;
+    private int currentWP = 0;
+    private Graph g;
 
     private void Start()
     {
         wps = wpManager.GetComponent<WPManager>().waypoints;
         g = wpManager.GetComponent<WPManager>().graph;
         currentNode = wps[0];
+        //GoTo(1);
     }
 
     public void GoTo(int wpIndex)

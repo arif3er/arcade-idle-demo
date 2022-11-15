@@ -37,7 +37,8 @@ public class Collector : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Converter"))
         {
-            converter = other.GetComponent<Converter>();
+            converter = other.GetComponentInParent<Converter>();
+            prefab = converter.endProductPrefab;
         }
     }
 
@@ -78,19 +79,37 @@ public class Collector : MonoBehaviour
             yield return new WaitForSeconds(1 / collectRate);
             if (isCollectingG)
             {
-                CollectResource();
+                CollectFromGenerator();
+            }
+            if (isCollectingC)
+            {
+                CollectFromConverter();
             }
         }
     }
 
-    void CollectResource()
+    void CollectFromGenerator()
     {
         if (backpack.Count < storageLimit && generator.resourceList.Count > 0)
         {
-            GameObject temp = Instantiate(prefab, spawnPoint);
-            temp.transform.position = new Vector3(spawnPoint.transform.position.x, backpack.Count * paddingY, spawnPoint.transform.position.z);
+            GameObject temp = ObjectPooler.Instance.SpawnFromPool(generator.prefabName, spawnPoint.transform.position, spawnPoint.transform.rotation);
+            //GameObject temp = Instantiate(prefab, spawnPoint);
+            temp.transform.SetParent(spawnPoint);
             backpack.Add(temp);
             generator.RemoveLast();
+            ReOrder();
+        }
+    }
+
+    void CollectFromConverter()
+    {
+        if (backpack.Count < storageLimit && converter.endProductList.Count > 0)
+        {
+            GameObject temp = ObjectPooler.Instance.SpawnFromPool(converter.endProductName, spawnPoint.transform.position, spawnPoint.transform.rotation);
+            //GameObject temp = Instantiate(prefab, spawnPoint);
+            temp.transform.SetParent(spawnPoint);
+            backpack.Add(temp);
+            converter.RemoveLast();
             ReOrder();
         }
     }
@@ -105,14 +124,16 @@ public class Collector : MonoBehaviour
 
     public void RemoveLast()
     {
-        Destroy(backpack[backpack.Count - 1]);
+        backpack[backpack.Count - 1].gameObject.SetActive(false);
+        //Destroy(backpack[backpack.Count - 1]);
         backpack.RemoveAt(backpack.Count - 1);
         ReOrder();
     }
         
     public void RemoveOne(GameObject resource)
     {
-        Destroy(resource);
+        resource.SetActive(false);
+        //Destroy(resource);
         backpack.Remove(resource);
         ReOrder();
     }

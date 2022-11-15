@@ -14,6 +14,8 @@ TagManager:
   - Customer
   - Orange
   - Fertilizer
+  - wp
+  - AppleTree
   layers:
   - Default
   - TransparentFX

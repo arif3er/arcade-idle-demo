@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectPooler : MonoBehaviour
 {
-    [Serializable]
+    [System.Serializable]
     public class Pool
     {
         public string tag;
@@ -36,7 +35,7 @@ public class ObjectPooler : MonoBehaviour
 
             for (int i = 0; i < pool.size; i++)
             {
-                GameObject obj = Instantiate(pool.prefab);
+                GameObject obj = Instantiate(pool.prefab, Vector3.zero, Quaternion.identity);
                 obj.SetActive(false);
                 objectPool.Enqueue(obj);
             }
@@ -49,6 +48,7 @@ public class ObjectPooler : MonoBehaviour
     {
         if (!poolDictionary.ContainsKey(tag))
         {
+            Debug.LogError("Pool with tag " + tag + " doesn't excist.");
             Debug.LogWarning("Pool with tag " + tag + " doesn't excist.");
             return null;
         }
@@ -56,17 +56,16 @@ public class ObjectPooler : MonoBehaviour
         GameObject objectToSpawn = poolDictionary[tag].Dequeue();
 
         objectToSpawn.SetActive(true);
-        objectToSpawn.transform.position = position;
-        objectToSpawn.transform.rotation = rotation;
+        objectToSpawn.transform.SetPositionAndRotation(position, rotation);
 
-        IPooledObject pooledObj = objectToSpawn.GetComponent<IPooledObject>();
+        /*IPooledObject pooledObj = objectToSpawn.GetComponent<IPooledObject>();
 
         if (pooledObj != null)
         {
             pooledObj.OnObjectSpawn();
-        }
+        }*/
 
-        poolDictionary[tag].Enqueue(objectToSpawn);
+        //poolDictionary[tag].Enqueue(objectToSpawn);
 
         return objectToSpawn;
     } 
