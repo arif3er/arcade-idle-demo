@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Collector : MonoBehaviour
@@ -8,16 +9,18 @@ public class Collector : MonoBehaviour
 
     [SerializeField] private Transform spawnPoint;
 
-    [SerializeField] private float collectRate;
-    [SerializeField] private int storageLimit;
+    public float collectRate;
+    public float capacity;
     [Range(0f, 1f)] public float paddingY;
 
     private Generator generator;
     private Converter converter;
-    private GameObject prefab;
 
     private bool isCollectingG;
     private bool isCollectingC;
+
+    public bool full;
+    public bool halfFull;
 
     private void Start()
     {
@@ -33,12 +36,10 @@ public class Collector : MonoBehaviour
         if (other.gameObject.CompareTag("Generator"))
         {
             generator = other.GetComponent<Generator>();
-            prefab = generator.prefab;
         }
         if (other.gameObject.CompareTag("Converter"))
         {
             converter = other.GetComponentInParent<Converter>();
-            prefab = converter.endProductPrefab;
         }
     }
 
@@ -46,17 +47,17 @@ public class Collector : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Generator"))
         {
-            if (!PlayerController.Instance.isMoving)    
+            //if (!PlayerController.Instance.isMoving)    
                 isCollectingG = true;
-            else
-                isCollectingG = false;
+            //else
+              //  isCollectingG = false;
         }
         if (other.gameObject.CompareTag("Converter"))
         {
-            if (!PlayerController.Instance.isMoving)
+            //if (!PlayerController.Instance.isMoving)
                 isCollectingC = true;
-            else
-                isCollectingC = false;
+            //else
+              //  isCollectingC = false;
         }
     }
 
@@ -90,27 +91,29 @@ public class Collector : MonoBehaviour
 
     void CollectFromGenerator()
     {
-        if (backpack.Count < storageLimit && generator.resourceList.Count > 0)
+        if (backpack.Count < capacity && generator.resourceList.Count > 0)
         {
-            GameObject temp = ObjectPooler.Instance.SpawnFromPool(generator.prefabName, spawnPoint.transform.position, spawnPoint.transform.rotation);
-            //GameObject temp = Instantiate(prefab, spawnPoint);
-            temp.transform.SetParent(spawnPoint);
-            backpack.Add(temp);
-            generator.RemoveLast();
-            ReOrder();
+            Transform item = generator.resourceList[generator.resourceList.Count - 1].transform;
+            var v3 = new Vector3(spawnPoint.transform.position.x, spawnPoint.transform.position.y + backpack.Count * paddingY, spawnPoint.transform.position.z);
+            var tween = item.DOJump(v3, 1f,1,0.2f).SetEase(Ease.InOutSine);
+            item.SetParent(spawnPoint);
+            backpack.Add(item.gameObject);
+            generator.resourceList.RemoveAt(generator.resourceList.Count - 1);
+            tween.OnComplete(() => { ReOrder(); });
         }
     }
 
     void CollectFromConverter()
     {
-        if (backpack.Count < storageLimit && converter.endProductList.Count > 0)
+        if (backpack.Count < capacity && converter.endProductList.Count > 0)
         {
-            GameObject temp = ObjectPooler.Instance.SpawnFromPool(converter.endProductName, spawnPoint.transform.position, spawnPoint.transform.rotation);
-            //GameObject temp = Instantiate(prefab, spawnPoint);
-            temp.transform.SetParent(spawnPoint);
-            backpack.Add(temp);
-            converter.RemoveLast();
-            ReOrder();
+            Transform item = converter.endProductList[converter.endProductList.Count - 1].transform;
+            var v3 = new Vector3(spawnPoint.transform.position.x, spawnPoint.transform.position.y + backpack.Count * paddingY, spawnPoint.transform.position.z);
+            var tween = item.DOJump(v3, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
+            item.SetParent(spawnPoint);
+            backpack.Add(item.gameObject);
+            converter.endProductList.RemoveAt(converter.endProductList.Count - 1);
+            tween.OnComplete(() => { ReOrder(); });
         }
     }
 
@@ -125,16 +128,15 @@ public class Collector : MonoBehaviour
     public void RemoveLast()
     {
         backpack[backpack.Count - 1].gameObject.SetActive(false);
-        //Destroy(backpack[backpack.Count - 1]);
         backpack.RemoveAt(backpack.Count - 1);
         ReOrder();
     }
         
     public void RemoveOne(GameObject resource)
     {
-        resource.SetActive(false);
-        //Destroy(resource);
+        resource.transform.SetParent(null);
         backpack.Remove(resource);
+        resource.SetActive(false);
         ReOrder();
     }
 }

@@ -10,7 +10,6 @@ public class FollowWP : MonoBehaviour
     [SerializeField] private float speed = 10f;
     [SerializeField] private float rotationSpeed = 10f;
 
-
     private void Update()
     {
         if (Vector3.Distance(transform.position, waypoints[currentWP].transform.position) < 3)

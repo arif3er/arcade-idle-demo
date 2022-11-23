@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class Generator : MonoBehaviour
 {
-    [HideInInspector] 
+    [HideInInspector]
     public List<GameObject> resourceList = new List<GameObject>();
 
-    public GameObject prefab;
     public string prefabName;
+    public GameObject wayPoint;
     [SerializeField] private Transform spawnPoint;
         
      public float spawnRate;
@@ -33,8 +34,8 @@ public class Generator : MonoBehaviour
             if (resourceList.Count < storageLimit)
             {
                 int rowCount = resourceList.Count / stackLimit;
-                //GameObject temp = Instantiate(prefab, spawnPoint);
                 GameObject temp = ObjectPooler.Instance.SpawnFromPool(prefabName, spawnPoint.transform.position, spawnPoint.transform.rotation);
+                temp.transform.DOShakeScale(0.2f,0.1f);
                 temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),   
                                                      (resourceList.Count % stackLimit) * paddingY,
                                                      spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
@@ -48,7 +49,6 @@ public class Generator : MonoBehaviour
         if (resourceList.Count > 0)
         {
             resourceList[resourceList.Count- 1].gameObject.SetActive(false);
-            //Destroy(resourceList[resourceList.Count - 1]);
             resourceList.RemoveAt(resourceList.Count - 1);
         }
     }

@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -7,44 +9,35 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI fruitText;
     [SerializeField] private float collectRate;
 
-    private Collector collector;
+    private List<Collector> collectorList = new List<Collector>();
+
+    private Collider _collider;
 
     public string fruitName;
     public int fruitPrice = 0;
     public int currentFruit = 0;
 
-    private bool inArea;
-
     private void Start()
     {
+        _collider = GetComponent<Collider>();
+
         StartCoroutine(Collect(fruitName));
         UpdateUI();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Worker"))
         {
-            collector = other.GetComponent<Collector>();
-        }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            if (!PlayerController.Instance.isMoving)
-                inArea = true;
-            else
-                inArea = false;
+            collectorList.Add(other.GetComponent<Collector>());
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Worker"))
         {
-            inArea = false;
+            collectorList.Remove(other.GetComponent<Collector>());
         }
     }
 
@@ -52,16 +45,19 @@ public class ShopManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(0.5f / collectRate);
-            if (inArea)
+            yield return new WaitForSeconds(1 / collectRate);
+
+            foreach (var c in collectorList.ToArray())
             {
+                Collector collector = c.GetComponent<Collector>();
                 for (int i = collector.backpack.Count - 1; i >= 0; i--)
                 {
                     GameObject go = collector.backpack[i];
-                    if (go.CompareTag(fruitName) && inArea)
+                    if (go.CompareTag(fruitName) && _collider.bounds.Contains(c.gameObject.transform.position))
                     {
+                        Tween tween = go.transform.DOJump(transform.position, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
+                        tween.OnComplete(() => { collector.RemoveOne(go); });
                         currentFruit++;
-                        collector.RemoveOne(go);
                         UpdateUI();
                         yield return new WaitForSeconds(0.5f / collectRate);
                     }

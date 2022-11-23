@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,8 +7,8 @@ public class FollowPath : MonoBehaviour
 {
     private Transform goal;
     [SerializeField] private float speed = 5f;
-    [SerializeField] private float accuracy = 1f;
-    [SerializeField] private float rotSpeed = 2f;
+    [SerializeField] private float accuracy = 3f;
+    [SerializeField] private float rotSpeed = 0.5f;
     public GameObject wpManager;
     private GameObject[] wps;
     private GameObject currentNode;
@@ -16,14 +17,14 @@ public class FollowPath : MonoBehaviour
 
     private void Start()
     {
-        wps = wpManager.GetComponent<WPManager>().waypoints;
-        g = wpManager.GetComponent<WPManager>().graph;
-        currentNode = wps[0];
-        //GoTo(1);
+        SetupThings();
     }
 
     public void GoTo(int wpIndex)
     {
+        if (wps == null)
+            SetupThings();
+
         g.AStar(currentNode, wps[wpIndex]);
         currentWP = 0;
     }
@@ -54,9 +55,16 @@ public class FollowPath : MonoBehaviour
 
             this.transform.rotation = Quaternion.Slerp(this.transform.rotation,
                                                     Quaternion.LookRotation(direction),
-                                                    Time.deltaTime * rotSpeed);
+                                                    Time.deltaTime * 3 * rotSpeed);
 
             this.transform.Translate(0,0, speed *Time.deltaTime);
         }
+    }
+
+    void SetupThings()
+    {
+        wps = wpManager.GetComponent<WPManager>().waypoints;
+        g = wpManager.GetComponent<WPManager>().graph;
+        currentNode = wps[0];
     }
 }
