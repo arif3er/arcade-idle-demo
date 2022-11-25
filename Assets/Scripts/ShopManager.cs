@@ -11,6 +11,9 @@ public class ShopManager : MonoBehaviour
 
     private List<Collector> collectorList = new List<Collector>();
 
+    public GameObject sellWaypoint;
+    public GameObject buyWaypoint;
+
     private Collider _collider;
 
     public string fruitName;

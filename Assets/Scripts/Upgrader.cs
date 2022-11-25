@@ -50,7 +50,7 @@ public class Upgrader : MonoBehaviour
     public int converterCapacityPrice = 500;
 
 
-    private void Start()
+    private void Awake()
     {
         if (Instance != null && Instance != this)
             Destroy(this);
@@ -65,16 +65,17 @@ public class Upgrader : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            upgradePanel.SetActive(true);
+            if (!PlayerController.Instance.isMoving)
+                upgradePanel.SetActive(true);
+            else
+                upgradePanel.SetActive(false);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
-        {
             upgradePanel.SetActive(false);
-        }
     }
 
     #region Player Upgrades
@@ -136,25 +137,18 @@ public class Upgrader : MonoBehaviour
             return;
         }
 
-        Player.Instance.SpendMoney(workerSpawnPrice);
-        workerSpawnPrice += (2 * workerSpawnPrice);
-        var go = workerList[workerList.Count - 1];
-        workerList.Remove(go);
-        go.gameObject.SetActive(true);
-
-        // Unique CheckCap for Worker
-        if (workerList.Count <= 0)
+        if (workerList.Count > 0)
         {
-            workerSpawnButton.GetComponentInChildren<TextMeshProUGUI>().text = "MAX";
-            workerSpawnButton.interactable = false;
+            Player.Instance.SpendMoney(workerSpawnPrice);
+            workerSpawnPrice += (2 * workerSpawnPrice);
+            Worker wo = workerList[0];
+            workerList.Remove(wo);
+            wo.gameObject.SetActive(true);
+            CheckCapWorker();
         }
-        else
-            workerSpawnButton.GetComponentInChildren<TextMeshProUGUI>().text = "$" + workerSpawnPrice;
     }
 
     #endregion
-
-    
 
     public void CheckCap(float upgraded, float cap, Button button, int price)
     {
@@ -165,5 +159,19 @@ public class Upgrader : MonoBehaviour
         }
         else
             button.GetComponentInChildren<TextMeshProUGUI>().text = "$" + price;
+    }
+
+    public void CheckCapWorker()
+    {
+        if (workerList.Count <= 0)
+        {
+            workerSpawnButton.GetComponentInChildren<TextMeshProUGUI>().text = "MAX";
+            workerSpawnButton.interactable = false;
+        }
+        else
+        {
+            workerSpawnButton.GetComponentInChildren<TextMeshProUGUI>().text = "$" + workerSpawnPrice;
+            workerSpawnButton.interactable = true;
+        }
     }
 }

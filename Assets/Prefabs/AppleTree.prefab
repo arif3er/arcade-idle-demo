@@ -289,6 +289,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endProductList: []
+  consumeWayPoint: {fileID: 0}
+  convertWayPoint: {fileID: 0}
+  workers:
+  - {fileID: 0}
   endProductName: Apple
   spawnPoint: {fileID: 68335350318985245}
   sourceText1: {fileID: 1577588390}
@@ -302,6 +306,7 @@ MonoBehaviour:
   collectorList: []
   convertRate: 1
   consumeRate: 2
+  capacity: 10
   stackLimit: 5
   paddingY: 0.1
   paddingX: 0

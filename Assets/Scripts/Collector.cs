@@ -28,7 +28,21 @@ public class Collector : MonoBehaviour
         for (int i = 0; i < otherCollectors.Length; i++)
             Physics.IgnoreCollision(otherCollectors[i].GetComponent<Collider>(), GetComponent<Collider>());
 
+        GameObject p = FindObjectOfType<Player>().gameObject;
+        Physics.IgnoreCollision(p.GetComponent<CharacterController>(), GetComponent<Collider>());
+        Physics.IgnoreCollision(p.GetComponentInChildren<Collider>(), GetComponent<Collider>());
+
+        //Physics.IgnoreCollision(Player.Instance.GetComponent<CharacterController>(), GetComponent<Collider>());
+    }
+
+    private void OnEnable()
+    {
         StartCoroutine(ResourceEnum());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     private void OnTriggerEnter(Collider other)

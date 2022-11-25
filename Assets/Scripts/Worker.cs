@@ -13,16 +13,13 @@ public class Worker : MonoBehaviour
     public TreeType targetTree;
     #endregion
 
-    public delegate void JobDone();
-    public static event JobDone OnJobDone;
-
     private Collector collector;
     public Converter converter;
     public FollowPath _followpath;
+    public ShopManager targetShop;
 
     public List<GameObject> wayPointList = new List<GameObject> ();
     public List<GameObject> generators = new List<GameObject>();
-    public List<GameObject> targets = new List<GameObject>();
 
     public bool isFull;
     public bool isEmpty = true;
@@ -30,19 +27,21 @@ public class Worker : MonoBehaviour
 
     private void Start()
     {
-        if (job == JobType.Gardener)
-            targets.Add(converter.consumeWayPoint);
-        else if (job == JobType.Carrier)
-            targets.Add(converter.convertWayPoint);
-
         _followpath = GetComponent<FollowPath>();
-
         generators = GameObject.FindGameObjectsWithTag("Generator").ToList();
         wayPointList = WPManager.Instance.waypoints.ToList();
         collector = GetComponent<Collector>();
-        StartCoroutine(WaitTillEmptyThenGo());
+        gameObject.SetActive(false);
+    }
 
-        //gameObject.SetActive(false);
+    private void OnEnable()
+    {
+        StartCoroutine(WaitTillEmptyThenGo());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     private void FixedUpdate()
@@ -58,24 +57,26 @@ public class Worker : MonoBehaviour
             isEmpty = false;
     }
 
-    public void RandomMoves()
-    {
-        int i = Random.Range(0, wayPointList.Count);
-        _followpath.GoTo(i);
-        Debug.Log(name + " " + i);
-    }
-
     public IEnumerator WaitTillEmptyThenGo()
     {
         while (true)
         {
             yield return new WaitForSeconds(0.5f);
-            if (isEmpty)
+
+            if (isEmpty && job == JobType.Carrier)
+            {
+                _followpath?.GoTo(wayPointList.IndexOf(converter.convertWayPoint));
+                StartCoroutine(WaitTillFullThenGo(targetShop.sellWaypoint));
+
+                yield break;
+            }
+
+            if (isEmpty && job == JobType.Gardener)
             {
                 if (genTurn == 1)
                 {
                     GameObject closestGeneratorWP = CalculateClosest(generators, "Water").GetComponent<Generator>().wayPoint;
-                    _followpath.GoTo(wayPointList.IndexOf(closestGeneratorWP));
+                    _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
                     StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
 
                     if (targetTree != TreeType.Apple)
@@ -86,8 +87,8 @@ public class Worker : MonoBehaviour
                 if (genTurn == 2)
                 {
                     GameObject closestGeneratorWP = CalculateClosest(generators, "Fertilizer").GetComponent<Generator>().wayPoint;
-                    _followpath.GoTo(wayPointList.IndexOf(closestGeneratorWP));
-                    StartCoroutine(WaitTillFullThenGo(targets[0]));
+                    _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
+                    StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
                     genTurn++;
 
                     if (targetTree != TreeType.Orange)
@@ -99,8 +100,8 @@ public class Worker : MonoBehaviour
                 if (genTurn == 3)
                 {
                     GameObject closestGeneratorWP = CalculateClosest(generators, "Spray").GetComponent<Generator>().wayPoint;
-                    _followpath.GoTo(wayPointList.IndexOf(closestGeneratorWP));
-                    StartCoroutine(WaitTillFullThenGo(targets[0]));
+                    _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
+                    StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
                     genTurn = 1;
                     yield break;
                 }
@@ -115,7 +116,7 @@ public class Worker : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
             if (isFull)
             {
-                _followpath.GoTo(wayPointList.IndexOf(target));
+                _followpath?.GoTo(wayPointList.IndexOf(target));
                 StartCoroutine(WaitTillEmptyThenGo());
                 yield break;
             }   

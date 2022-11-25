@@ -14,8 +14,8 @@ public class WorkerDebugger : MonoBehaviour
 		{
 			if (go != overlook)
 			{
-				//go.name = "Worker" + string.Format("{0:000}", i) + "\n" + go.GetComponentInParent<Worker>().workerName;
-				go.name = "Worker" + string.Format("{0:000}", i);
+				go.name = "Worker" + string.Format("{0:000}", i) + "\n" + go.GetComponentInParent<Worker>().workerName;
+				//go.name = "Worker" + string.Format("{0:000}", i);
 
 				i++;
 			}

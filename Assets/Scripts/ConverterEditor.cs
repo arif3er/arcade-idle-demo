@@ -36,12 +36,13 @@ public class ConverterEditor : Editor
     SerializedProperty convertRate;
     SerializedProperty consumeRate;
 
+    SerializedProperty capacity;
     SerializedProperty stackLimit;
     SerializedProperty paddingY;
     SerializedProperty paddingX;
     SerializedProperty paddingZ;
 
-    bool positioning, sourceSetup, waypointSetup = false;
+    bool quality,positioning, sourceSetup, waypointSetup = false;
     #endregion
 
     private void OnEnable()
@@ -74,6 +75,7 @@ public class ConverterEditor : Editor
         convertRate = serializedObject.FindProperty("convertRate");
         consumeRate = serializedObject.FindProperty("consumeRate");
 
+        capacity = serializedObject.FindProperty("capacity");
         stackLimit = serializedObject.FindProperty("stackLimit");
         paddingY = serializedObject.FindProperty("paddingY");
         paddingX = serializedObject.FindProperty("paddingX");
@@ -87,11 +89,18 @@ public class ConverterEditor : Editor
 
         EditorGUILayout.PropertyField(endProduct);
         EditorGUILayout.Space(1);
-        EditorGUILayout.PropertyField(convertRate);
-        EditorGUILayout.Space(1);
-        EditorGUILayout.PropertyField(consumeRate);
-        EditorGUILayout.Space(3);
 
+        quality = EditorGUILayout.BeginFoldoutHeaderGroup(quality, "Quality");
+        if (quality)
+        {
+            EditorGUILayout.PropertyField(capacity);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(convertRate);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(consumeRate);
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
+        EditorGUILayout.Space(3);
 
         sourceSetup = EditorGUILayout.BeginFoldoutHeaderGroup(sourceSetup, "Sources");
         if (sourceSetup)

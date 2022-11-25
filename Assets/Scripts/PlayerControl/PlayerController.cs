@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
 
         playerInput = new PlayerInput();
         controller = GetComponent<CharacterController>();
+        controller.detectCollisions = false;
         cameraMain = Camera.main.transform;
         child = transform.GetChild(0).transform;
     }

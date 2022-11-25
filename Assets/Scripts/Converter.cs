@@ -10,7 +10,7 @@ public class Converter : MonoBehaviour
     public List<GameObject> endProductList = new List<GameObject>();
     public GameObject consumeWayPoint;
     public GameObject convertWayPoint;
-    public Worker[] workers;
+    public Worker[] workers = new Worker[0];
 
     public string endProductName;
     public Transform spawnPoint;
@@ -38,6 +38,8 @@ public class Converter : MonoBehaviour
     [SerializeField] private float convertRate;
     [SerializeField] private float consumeRate;
 
+
+    public int capacity;
     [SerializeField] private int stackLimit;
     [SerializeField][Range(0f, 1f)] private float paddingY;
     [SerializeField][Range(-2f, 2f)] private float paddingX;
@@ -50,6 +52,22 @@ public class Converter : MonoBehaviour
         StartCoroutine(Consume());
         StartCoroutine(Convert());
         UpdateUI();
+    }
+
+    private void Start()
+    {
+        for (int i = 0; i < workers.Length; i++)
+        {
+            if (workers[i] != null)
+            {
+                Upgrader.Instance.workerList.Add(workers[i]);
+                Upgrader.Instance.CheckCapWorker();
+            }
+            else
+                Debug.Log("Worker slot is empty !");
+
+            Debug.Log("Worker " + workers[i].workerName + " added to Upgrader list.");
+        }
     }
 
     private void OnDisable()
@@ -71,60 +89,6 @@ public class Converter : MonoBehaviour
         if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Worker"))
         {
             collectorList.Remove(other.GetComponent<Collector>());
-        }
-    }
-
-    IEnumerator ConsumeAlternate()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1 / consumeRate);
-
-            foreach (var c in collectorList.ToArray())
-            {
-                Collector collector = c.GetComponent<Collector>();
-                for (int i = collector.backpack.Count - 1; i >= 0; i--)
-                {
-                    yield return new WaitForSeconds(1 / consumeRate);
-
-                    if (_collider.bounds.Contains(c.gameObject.transform.position))
-                    {
-                        GameObject go = collector.backpack[i];
-                        if ((sourceNeed == SourceNeed.One || sourceNeed == SourceNeed.Two || sourceNeed == SourceNeed.Three))
-                        {
-                            if (go.CompareTag(sourceType1.ToString()))
-                            {
-                                Tween tween = go.transform.DOJump(transform.position, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
-                                tween.OnComplete(() => { collector.RemoveOne(go); });
-                                currentSource1++;
-                                UpdateUI();
-                            }
-                        }
-                        if ((sourceNeed == SourceNeed.Two || sourceNeed == SourceNeed.Three))
-                        {
-                            if (go.CompareTag(sourceType2.ToString()))
-                            {
-                                Tween tween = go.transform.DOJump(transform.position, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
-                                tween.OnComplete(() => { collector.RemoveOne(go); });
-                                currentSource2++;
-                                collector.RemoveOne(go);
-                                UpdateUI();
-                            }
-                        }
-                        if ((sourceNeed == SourceNeed.Three))
-                        {
-                            if (go.CompareTag(sourceType3.ToString()))
-                            {
-                                Tween tween = go.transform.DOJump(transform.position, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
-                                tween.OnComplete(() => { collector.RemoveOne(go); });
-                                currentSource3++;
-                                collector.RemoveOne(go);
-                                UpdateUI();
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -202,20 +166,23 @@ public class Converter : MonoBehaviour
             if (sourceNeed == SourceNeed.One && currentSource1 > 0)
             {
                 currentSource1--;
-                ProduceEndProduct();
+                UpdateUI();
+                if (endProductList.Count < capacity) ProduceEndProduct();
             }
             if (sourceNeed == SourceNeed.Two && currentSource1 > 0 && currentSource2 > 0)
             {
                 currentSource1--;
                 currentSource2--;
-                ProduceEndProduct();
+                UpdateUI();
+                if (endProductList.Count < capacity) ProduceEndProduct();
             }
             if (sourceNeed == SourceNeed.Three && currentSource1 > 0 && currentSource2 > 0 && currentSource3 > 0)
             {
                 currentSource1--;
                 currentSource2--;
                 currentSource3--;
-                ProduceEndProduct();
+                UpdateUI();
+                if (endProductList.Count < capacity) ProduceEndProduct();
             }
         }
     }
@@ -231,7 +198,6 @@ public class Converter : MonoBehaviour
                                              spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
         temp.transform.SetParent(spawnPoint.transform);
         endProductList.Add(temp);
-        UpdateUI();
     }
 
     public void RemoveLast()
