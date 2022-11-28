@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6973541433257900502}
   - component: {fileID: 6973541433257900497}
   - component: {fileID: 6973541433257900496}
+  - component: {fileID: 5566290090239154563}
+  - component: {fileID: 8271864419746674772}
   - component: {fileID: 6973541433257900499}
   - component: {fileID: 6973541433257900498}
   m_Layer: 0
@@ -85,6 +87,38 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5566290090239154563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6973541433257900493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c6294906a5dfa14795b7302306c2b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnPoint: {fileID: 0}
+  buyChance: 50
+  random: 0
+  isFull: 0
+--- !u!114 &8271864419746674772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6973541433257900493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a2f6ee6a9b4c9c4c9da26693b2e827a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  accuracy: 1
+  rotSpeed: 2
+  wpManager: {fileID: 0}
 --- !u!136 &6973541433257900499
 CapsuleCollider:
   m_ObjectHideFlags: 0

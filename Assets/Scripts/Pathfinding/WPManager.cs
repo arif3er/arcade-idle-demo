@@ -13,19 +13,12 @@ public struct Link
 
 public class WPManager : MonoBehaviour
 {
-    public static WPManager Instance { get; private set; }
-
     public GameObject[] waypoints;
     public Link[] links;
     public Graph graph = new Graph();
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;
-
         if (waypoints.Length > 0)
         {
             foreach(GameObject wp in waypoints)

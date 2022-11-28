@@ -1,19 +1,27 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomerManager : MonoBehaviour
 {
-    private ShopManager shopManager;
+    public List<Customer> customerList = new List<Customer>();
 
     private void Start()
     {
-        shopManager = GetComponentInParent<ShopManager>();
+        StartCoroutine(SpawnCustomer());
+
+        foreach (var item in customerList)
+            item.gameObject.SetActive(false);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private IEnumerator SpawnCustomer()
     {
-        if (other.gameObject.CompareTag("Customer"))
+        for (int i = 0; i < customerList.Count; i++)
         {
-            shopManager.Sell();
+            yield return new WaitForSeconds(Random.Range(5, 10));
+            customerList[i].gameObject.SetActive(true);
         }
+
+        yield break;
     }
 }

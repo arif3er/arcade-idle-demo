@@ -27,12 +27,6 @@ public class Collector : MonoBehaviour
         Collector[] otherCollectors = GameObject.FindObjectsOfType<Collector>();
         for (int i = 0; i < otherCollectors.Length; i++)
             Physics.IgnoreCollision(otherCollectors[i].GetComponent<Collider>(), GetComponent<Collider>());
-
-        GameObject p = FindObjectOfType<Player>().gameObject;
-        Physics.IgnoreCollision(p.GetComponent<CharacterController>(), GetComponent<Collider>());
-        Physics.IgnoreCollision(p.GetComponentInChildren<Collider>(), GetComponent<Collider>());
-
-        //Physics.IgnoreCollision(Player.Instance.GetComponent<CharacterController>(), GetComponent<Collider>());
     }
 
     private void OnEnable()
@@ -61,17 +55,20 @@ public class Collector : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Generator"))
         {
-            //if (!PlayerController.Instance.isMoving)    
+            if (GetComponent<CharacterController>() != null)
+            {
+                if (!PlayerController.Instance.isMoving)
+                    isCollectingG = true;
+                else
+                    isCollectingG = false;
+            }
+            else
                 isCollectingG = true;
-            //else
-              //  isCollectingG = false;
+              
         }
         if (other.gameObject.CompareTag("Converter"))
         {
-            //if (!PlayerController.Instance.isMoving)
-                isCollectingC = true;
-            //else
-              //  isCollectingC = false;
+            isCollectingC = true;
         }
     }
 

@@ -1,16 +1,17 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuyArea : MonoBehaviour
+public class BuyArea : MonoBehaviour, ISaveable
 {
     [SerializeField] private GameObject lockedObject;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private Image bar;
 
-    [SerializeField] private int moneySpended;
-    [SerializeField] private int moneyNeed;
+    public int moneySpended;
+    [SerializeField] private int moneyNeed; 
     [SerializeField] private float collectRate;
 
     private bool inArea;
@@ -52,7 +53,7 @@ public class BuyArea : MonoBehaviour
                 lockedObject.SetActive(true);
                 gameObject.SetActive(false);
             }
-            if (inArea && Player.Instance.currenetMoney > 0)
+            if (inArea && Player.Instance.currenetMoney > 0 && moneySpended < moneyNeed)
             {
                 moneySpended++;
                 UpdateUI(moneySpended, moneyNeed);
@@ -67,4 +68,32 @@ public class BuyArea : MonoBehaviour
         text.text = current + " / " + need + " $";
         bar.fillAmount = current/need;
     }
+
+    #region Saving System
+
+    [Serializable]
+    private struct SaveData
+    {
+        public int moneySpended;
+        public bool isActive;
+    }
+
+    public object CaptureState()
+    {
+        return new SaveData
+        {
+            moneySpended = moneySpended,
+            isActive = gameObject.activeInHierarchy
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        var saveData = (SaveData)state;
+
+        moneySpended = saveData.moneySpended;
+        gameObject.SetActive(saveData.isActive);
+        UpdateUI(moneySpended, moneyNeed);
+    }
+    #endregion
 }

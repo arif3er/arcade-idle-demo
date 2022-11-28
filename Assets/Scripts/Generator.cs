@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
-public class Generator : MonoBehaviour
+public class Generator : MonoBehaviour, ISaveable
 {
     [HideInInspector]
     public List<GameObject> resourceList = new List<GameObject>();
@@ -14,9 +14,9 @@ public class Generator : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
         
      public float spawnRate;
-     public float storageLimit;
-     public int stackLimit;
+     public float capacity;
 
+     public int stackLimit;
     [SerializeField][Range(0f, 1f)] float paddingY;
     [SerializeField][Range(-2f, 2f)] float paddingX;
     [SerializeField][Range(-2f, 2f)] float paddingZ;
@@ -31,7 +31,7 @@ public class Generator : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(1 / spawnRate);
-            if (resourceList.Count < storageLimit)
+            if (resourceList.Count < capacity)
             {
                 int rowCount = resourceList.Count / stackLimit;
                 GameObject temp = ObjectPooler.Instance.SpawnFromPool(prefabName, spawnPoint.transform.position, spawnPoint.transform.rotation);
@@ -52,4 +52,30 @@ public class Generator : MonoBehaviour
             resourceList.RemoveAt(resourceList.Count - 1);
         }
     }
+
+    #region Save System
+
+    private struct SaveData
+    {
+        public float spawnRate;
+        public float capacity;
+    }
+
+    public object CaptureState()
+    {
+        return new SaveData
+        {
+            spawnRate = spawnRate,
+            capacity = capacity
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        var saveData = (SaveData)state;
+
+        spawnRate = saveData.spawnRate;
+        capacity = saveData.capacity;
+    }
+    #endregion
 }

@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     public bool isMoving;
 
     public float playerSpeed = 2.0f;
-    [SerializeField] private float rotationSpeed = .0f;
+    [SerializeField] private float rotationSpeed = 0f;
     [SerializeField] private float jumpHeight = 1.0f;
     [SerializeField] private float gravityValue = -9.81f;
 
@@ -31,7 +31,6 @@ public class PlayerController : MonoBehaviour
 
         playerInput = new PlayerInput();
         controller = GetComponent<CharacterController>();
-        controller.detectCollisions = false;
         cameraMain = Camera.main.transform;
         child = transform.GetChild(0).transform;
     }
@@ -89,5 +88,10 @@ public class PlayerController : MonoBehaviour
             Quaternion rotation = Quaternion.Euler(new Vector3(child.localEulerAngles.x, cameraMain.localEulerAngles.y, child.eulerAngles.z));
             child.rotation = Quaternion.Lerp(child.rotation, rotation, Time.deltaTime * rotationSpeed);
         }
+    }
+
+    public void PlayerCollIgnore(Collider other)
+    {
+        Physics.IgnoreCollision(controller, other);
     }
 }

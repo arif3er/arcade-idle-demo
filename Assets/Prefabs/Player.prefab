@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 433756282}
   - component: {fileID: 433756284}
   - component: {fileID: 433756285}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -67,7 +67,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e88b9d44352b1e4c86ee6cd47a0d4fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSpeed: 4
+  isMoving: 0
+  playerSpeed: 10
   rotationSpeed: 0
   jumpHeight: 1
   gravityValue: -9.81
@@ -86,8 +87,10 @@ MonoBehaviour:
   backpack: []
   spawnPoint: {fileID: 1574059071858359024}
   collectRate: 3
-  storageLimit: 20
+  capacity: 10
   paddingY: 0.1
+  full: 0
+  halfFull: 0
 --- !u!114 &433756285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,7 +104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moneyText: {fileID: 0}
-  currenetMoney: 0
+  currenetMoney: 100000
 --- !u!1 &1574059071430786255
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,7 +116,7 @@ GameObject:
   - component: {fileID: 1574059071430786254}
   - component: {fileID: 1574059071430786248}
   - component: {fileID: 1574059071430786249}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,9 +199,8 @@ GameObject:
   - component: {fileID: 1574059071602276694}
   - component: {fileID: 1574059071602276688}
   - component: {fileID: 1574059071602276689}
-  - component: {fileID: 265680750}
   - component: {fileID: 265680752}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,20 +273,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &265680750
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1574059071602276695}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &265680752
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -310,7 +298,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1574059071858359024}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}

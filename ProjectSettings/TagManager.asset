@@ -16,6 +16,8 @@ TagManager:
   - Fertilizer
   - wp
   - AppleTree
+  - Shop
+  - RoadEnd
   layers:
   - Default
   - TransparentFX

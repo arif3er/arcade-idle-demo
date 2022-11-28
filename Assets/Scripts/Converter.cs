@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -5,7 +6,7 @@ using TMPro;
 using UnityEngine;
 
 
-public class Converter : MonoBehaviour
+public class Converter : MonoBehaviour, ISaveable
 {
     public List<GameObject> endProductList = new List<GameObject>();
     public GameObject consumeWayPoint;
@@ -35,11 +36,10 @@ public class Converter : MonoBehaviour
     public List<Collector> collectorList = new List<Collector>();
     private Collider _collider;
 
+    public int capacity;
     [SerializeField] private float convertRate;
     [SerializeField] private float consumeRate;
 
-
-    public int capacity;
     [SerializeField] private int stackLimit;
     [SerializeField][Range(0f, 1f)] private float paddingY;
     [SerializeField][Range(-2f, 2f)] private float paddingX;
@@ -62,11 +62,11 @@ public class Converter : MonoBehaviour
             {
                 Upgrader.Instance.workerList.Add(workers[i]);
                 Upgrader.Instance.CheckCapWorker();
+                Debug.Log("Worker " + workers[i].workerName + " added to Upgrader list.");
             }
             else
                 Debug.Log("Worker slot is empty !");
 
-            Debug.Log("Worker " + workers[i].workerName + " added to Upgrader list.");
         }
     }
 
@@ -82,7 +82,6 @@ public class Converter : MonoBehaviour
             collectorList.Add(other.GetComponent<Collector>());
         }
     }
-
 
     private void OnTriggerExit(Collider other)
     {
@@ -220,4 +219,35 @@ public class Converter : MonoBehaviour
         if (sourceText3 != null)
             sourceText3.text = currentSource3.ToString();
     }
+
+
+    #region Save System
+
+    [Serializable]
+    private struct SaveData
+    {
+        public int capacity;
+        public float convertRate;
+        public float consumeRate;
+    }
+
+    public object CaptureState()
+    {
+        return new SaveData
+        {
+            capacity = capacity,
+            convertRate = convertRate,
+            consumeRate = consumeRate
+        };
+    }
+
+    public void RestoreState(object state)
+    {
+        var saveData = (SaveData)state;
+
+        capacity = saveData.capacity;
+        convertRate = saveData.convertRate;
+        consumeRate = saveData.consumeRate;
+    }
+    #endregion
 }

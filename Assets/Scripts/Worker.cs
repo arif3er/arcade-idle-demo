@@ -13,9 +13,10 @@ public class Worker : MonoBehaviour
     public TreeType targetTree;
     #endregion
 
-    private Collector collector;
     public Converter converter;
-    public FollowPath _followpath;
+    private Collector collector;
+    private FollowPath _followpath;
+    public WPManager _wpManager;
     public ShopManager targetShop;
 
     public List<GameObject> wayPointList = new List<GameObject> ();
@@ -29,7 +30,7 @@ public class Worker : MonoBehaviour
     {
         _followpath = GetComponent<FollowPath>();
         generators = GameObject.FindGameObjectsWithTag("Generator").ToList();
-        wayPointList = WPManager.Instance.waypoints.ToList();
+        wayPointList = _wpManager.waypoints.ToList();
         collector = GetComponent<Collector>();
         gameObject.SetActive(false);
     }
