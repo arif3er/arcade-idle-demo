@@ -31,6 +31,7 @@ public class Generator : MonoBehaviour, ISaveable
         while (true)
         {
             yield return new WaitForSeconds(1 / spawnRate);
+
             if (resourceList.Count < capacity)
             {
                 int rowCount = resourceList.Count / stackLimit;
@@ -43,15 +44,6 @@ public class Generator : MonoBehaviour, ISaveable
             }
         }
     }   
-
-    public void RemoveLast()
-    {
-        if (resourceList.Count > 0)
-        {
-            resourceList[resourceList.Count- 1].gameObject.SetActive(false);
-            resourceList.RemoveAt(resourceList.Count - 1);
-        }
-    }
 
     #region Save System
 

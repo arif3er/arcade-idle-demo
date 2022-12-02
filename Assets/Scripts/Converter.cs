@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 
 public class Converter : MonoBehaviour, ISaveable
 {
@@ -15,6 +15,9 @@ public class Converter : MonoBehaviour, ISaveable
 
     public string endProductName;
     public Transform spawnPoint;
+    public Transform[] spawnPoints = new Transform[0];
+    public bool[] usedSpawnPoints = new bool[20];
+    public List<int> spawnInfo = new List<int>();
 
     public TextMeshProUGUI sourceText1;
     public TextMeshProUGUI sourceText2;
@@ -37,13 +40,15 @@ public class Converter : MonoBehaviour, ISaveable
     private Collider _collider;
 
     public int capacity;
-    [SerializeField] private float convertRate;
-    [SerializeField] private float consumeRate;
+    public float convertRate;
+    public float consumeRate;
 
     [SerializeField] private int stackLimit;
     [SerializeField][Range(0f, 1f)] private float paddingY;
     [SerializeField][Range(-2f, 2f)] private float paddingX;
     [SerializeField][Range(-2f, 2f)] private float paddingZ;
+
+    private Vector3 scaleFactor;
 
     private void OnEnable()
     {
@@ -52,6 +57,7 @@ public class Converter : MonoBehaviour, ISaveable
         StartCoroutine(Consume());
         StartCoroutine(Convert());
         UpdateUI();
+        SetScaleFactor();
     }
 
     private void Start()
@@ -61,12 +67,11 @@ public class Converter : MonoBehaviour, ISaveable
             if (workers[i] != null)
             {
                 Upgrader.Instance.workerList.Add(workers[i]);
-                Upgrader.Instance.CheckCapWorker();
+                Upgrader.Instance.CheckCapWorkerSpawn();
                 Debug.Log("Worker " + workers[i].workerName + " added to Upgrader list.");
             }
             else
                 Debug.Log("Worker slot is empty !");
-
         }
     }
 
@@ -166,14 +171,14 @@ public class Converter : MonoBehaviour, ISaveable
             {
                 currentSource1--;
                 UpdateUI();
-                if (endProductList.Count < capacity) ProduceEndProduct();
+                if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
             }
             if (sourceNeed == SourceNeed.Two && currentSource1 > 0 && currentSource2 > 0)
             {
                 currentSource1--;
                 currentSource2--;
                 UpdateUI();
-                if (endProductList.Count < capacity) ProduceEndProduct();
+                if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
             }
             if (sourceNeed == SourceNeed.Three && currentSource1 > 0 && currentSource2 > 0 && currentSource3 > 0)
             {
@@ -181,7 +186,7 @@ public class Converter : MonoBehaviour, ISaveable
                 currentSource2--;
                 currentSource3--;
                 UpdateUI();
-                if (endProductList.Count < capacity) ProduceEndProduct();
+                if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
             }
         }
     }
@@ -189,7 +194,7 @@ public class Converter : MonoBehaviour, ISaveable
     private void ProduceEndProduct()
     {
         int rowCount = endProductList.Count / stackLimit;
-        GameObject temp = ObjectPooler.Instance.SpawnFromPool(Utility.ToTitleCase(endProduct.ToString()), spawnPoint.transform.position, 
+        GameObject temp = ObjectPooler.Instance.SpawnFromPool(ArifGDK.ToTitleCase(endProduct.ToString()), spawnPoint.transform.position, 
                                                                                                           spawnPoint.transform.rotation);
         temp.transform.DOShakeScale(0.2f, 0.1f);
         temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),
@@ -199,14 +204,52 @@ public class Converter : MonoBehaviour, ISaveable
         endProductList.Add(temp);
     }
 
-    public void RemoveLast()
+    void SpawnAtRandomSpawnPoint()
     {
-        if (endProductList.Count > 0)
-        {
-            endProductList[endProductList.Count - 1].gameObject.SetActive(false);
-            endProductList.RemoveAt(endProductList.Count - 1);
+        int spawnIndex = Random.Range(0, spawnPoints.Length);
+        int checkedPoints = 0;
+        while (usedSpawnPoints[spawnIndex])
+        { // If a spawn point is occupied
+            spawnIndex = (spawnIndex + 1) % spawnPoints.Length; // Pick the next available spawn point
+            checkedPoints++;
+            if (checkedPoints >= spawnPoints.Length)
+            {
+                return; // No spawn points available
+            }
         }
+        
+        SpawnAtPoint(spawnIndex);
     }
+
+    void SpawnAtPoint(int index)
+    {
+        Transform spawnLocation = spawnPoints[index];
+        GameObject fruit = ObjectPooler.Instance.SpawnFromPool(ArifGDK.ToTitleCase(endProduct.ToString()), spawnLocation.position,
+                                                                                                           spawnLocation.rotation);
+        //fruit.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 1f);
+        fruit.transform.SetParent(spawnLocation);
+        endProductList.Add(fruit);
+        fruit.transform.localScale = scaleFactor;
+        fruit.transform.DOShakeScale(0.3f, 0.1f);
+        usedSpawnPoints[index] = true; // Mark spawn point as having been used
+        spawnInfo.Add(index);
+    }
+
+    public void ResetSpawnPoint(int index)
+    {
+        usedSpawnPoints[index] = false;
+    }
+
+    private void SetScaleFactor()
+    {
+        if (endProduct == EndProduct.Apple)
+            scaleFactor = new Vector3(0.5f, 0.5f, 0.5f);
+        else if (endProduct == EndProduct.Orange)
+            scaleFactor = Vector3.one;
+        else if (endProduct == EndProduct.Banana)
+            scaleFactor = Vector3.one;
+    }
+
 
     private void UpdateUI()
     {

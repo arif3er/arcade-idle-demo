@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEditor;
-using UnityEngine;
 
 [CustomEditor(typeof(Converter))]
 public class ConverterEditor : Editor
@@ -12,9 +9,9 @@ public class ConverterEditor : Editor
     SerializedProperty consumeWayPoint;
     SerializedProperty convertWayPoint;
 
-
     SerializedProperty endProduct;
     SerializedProperty spawnPoint;
+    SerializedProperty spawnPoints;
 
     SerializedProperty sourceText1;
     SerializedProperty sourceText2;
@@ -53,6 +50,7 @@ public class ConverterEditor : Editor
         convertWayPoint = serializedObject.FindProperty("convertWayPoint");
 
         spawnPoint = serializedObject.FindProperty("spawnPoint");
+        spawnPoints = serializedObject.FindProperty("spawnPoints");
         m_collider = serializedObject.FindProperty("m_collider");
 
         sourceText1 = serializedObject.FindProperty("sourceText1");
@@ -88,6 +86,8 @@ public class ConverterEditor : Editor
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(endProduct);
+        EditorGUILayout.Space(1);
+        EditorGUILayout.PropertyField(endProductList);
         EditorGUILayout.Space(1);
 
         quality = EditorGUILayout.BeginFoldoutHeaderGroup(quality, "Quality");
@@ -161,6 +161,9 @@ public class ConverterEditor : Editor
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
         EditorGUILayout.PropertyField(workers);
+        EditorGUILayout.Space(1);
+        EditorGUILayout.PropertyField(spawnPoints);
+
 
         serializedObject.ApplyModifiedProperties();
     }

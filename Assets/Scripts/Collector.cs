@@ -119,6 +119,7 @@ public class Collector : MonoBehaviour
         if (backpack.Count < capacity && converter.endProductList.Count > 0)
         {
             Transform item = converter.endProductList[converter.endProductList.Count - 1].transform;
+            converter.ResetSpawnPoint(converter.spawnInfo[converter.spawnInfo.Count - 1]);
             var v3 = new Vector3(spawnPoint.transform.position.x, spawnPoint.transform.position.y + backpack.Count * paddingY, spawnPoint.transform.position.z);
             var tween = item.DOJump(v3, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
             item.SetParent(spawnPoint);

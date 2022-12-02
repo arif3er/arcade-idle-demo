@@ -9,7 +9,7 @@ public class SaveableEntity : MonoBehaviour
     public string Id => id;
 
     [ContextMenu("Generate Id")]
-    private void GenerateId() => id = Guid.NewGuid().ToString();
+    private void GenerateId() => id = Guid.NewGuid().ToString() + this.GetInstanceID();
 
     public object CaptureState()
     {
@@ -37,5 +37,4 @@ public class SaveableEntity : MonoBehaviour
             }
         }
     }
-
 }

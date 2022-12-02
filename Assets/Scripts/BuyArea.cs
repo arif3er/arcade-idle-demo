@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,6 @@ public class BuyArea : MonoBehaviour, ISaveable
 
     public int moneySpended;
     [SerializeField] private int moneyNeed; 
-    [SerializeField] private float collectRate;
 
     private bool inArea;
 
@@ -51,14 +51,15 @@ public class BuyArea : MonoBehaviour, ISaveable
             {
                 StopAllCoroutines();
                 lockedObject.SetActive(true);
+                lockedObject.transform.DOShakeScale(0.5f, 1);
                 gameObject.SetActive(false);
             }
-            if (inArea && Player.Instance.currenetMoney > 0 && moneySpended < moneyNeed)
+            if (inArea && Player.Instance.currenetMoney >= (moneyNeed / 100) && moneySpended < moneyNeed)
             {
-                moneySpended++;
-                UpdateUI(moneySpended, moneyNeed);
-                Player.Instance.SpendMoney(1);
+                Player.Instance.SpendMoney((moneyNeed / 100));
                 Player.Instance.UpdateMoneyText();
+                moneySpended += (moneyNeed / 100);
+                UpdateUI(moneySpended, moneyNeed);
             }
         }
     }
