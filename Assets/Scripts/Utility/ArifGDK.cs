@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.UI;
 
 public static class ArifGDK
 {
@@ -43,5 +44,10 @@ public static class ArifGDK
     public static void ListPop<T>(List<T> list)
     {
         list.RemoveAt(list.Count - 1);
+    }
+
+    public static void FillImage(Image image, float current, int need)
+    {
+        image.fillAmount =  current/need;
     }
 }

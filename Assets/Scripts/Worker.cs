@@ -24,7 +24,7 @@ public class Worker : MonoBehaviour
 
     public bool isFull;
     public bool isEmpty = true;
-    int genTurn = 1;
+    private int genTurn = 1;
 
     private void Start()
     {
@@ -76,7 +76,7 @@ public class Worker : MonoBehaviour
             {
                 if (genTurn == 1)
                 {
-                    GameObject closestGeneratorWP = CalculateClosest(generators, "Water").GetComponent<Generator>().wayPoint;
+                    GameObject closestGeneratorWP = CalculateClosest(generators, "Fertilizer1").GetComponent<Generator>().wayPoint;
                     _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
                     StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
 
@@ -87,10 +87,9 @@ public class Worker : MonoBehaviour
                 }
                 if (genTurn == 2)
                 {
-                    GameObject closestGeneratorWP = CalculateClosest(generators, "Fertilizer").GetComponent<Generator>().wayPoint;
+                    GameObject closestGeneratorWP = CalculateClosest(generators, "Fertilizer2").GetComponent<Generator>().wayPoint;
                     _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
                     StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
-                    genTurn++;
 
                     if (targetTree != TreeType.Orange)
                         genTurn++;
@@ -100,7 +99,8 @@ public class Worker : MonoBehaviour
                 }
                 if (genTurn == 3)
                 {
-                    GameObject closestGeneratorWP = CalculateClosest(generators, "Spray").GetComponent<Generator>().wayPoint;
+                    Debug.Log("gen3");
+                    GameObject closestGeneratorWP = CalculateClosest(generators, "Fertilizer3").GetComponent<Generator>().wayPoint;
                     _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
                     StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
                     genTurn = 1;
@@ -135,6 +135,7 @@ public class Worker : MonoBehaviour
         }
 
         float closest = Vector3.Distance(transform.position, temp[0].transform.position);
+
         int targetNumber = 0;
 
         for (int i = 0; i < temp.Count; i++)

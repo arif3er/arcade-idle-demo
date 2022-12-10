@@ -7,17 +7,19 @@ TagManager:
   - Plant
   - Generator
   - Apple
-  - Water
   - Ground
   - Worker
   - Converter
   - Customer
   - Orange
-  - Fertilizer
   - wp
   - AppleTree
   - Shop
   - RoadEnd
+  - Banana
+  - Fertilizer1
+  - Fertilizer2
+  - Fertilizer3
   layers:
   - Default
   - TransparentFX

@@ -8,20 +8,19 @@ public class CustomerManager : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(SpawnCustomer());
-
         foreach (var item in customerList)
             item.gameObject.SetActive(false);
+
+        StartCoroutine(SpawnCustomer());
     }
 
     private IEnumerator SpawnCustomer()
     {
         for (int i = 0; i < customerList.Count; i++)
         {
-            yield return new WaitForSeconds(Random.Range(5, 10));
+            //yield return new WaitForSeconds(Random.Range(5, 10));
             customerList[i].gameObject.SetActive(true);
         }
-
         yield break;
     }
 }

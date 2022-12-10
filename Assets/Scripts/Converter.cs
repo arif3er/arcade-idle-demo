@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class Converter : MonoBehaviour, ISaveable
@@ -23,11 +24,15 @@ public class Converter : MonoBehaviour, ISaveable
     public TextMeshProUGUI sourceText2;
     public TextMeshProUGUI sourceText3;
 
+    public GameObject itsFullWarn;
+    public GameObject needWaterWarn;
+    public Image waterImage;
+
     public enum EndProduct { Apple, Orange, Banana };
     public EndProduct endProduct;
     public enum SourceNeed { One, Two, Three };
     public SourceNeed sourceNeed;
-    public enum SourceType { Water, Fertilizer, Spray };
+    public enum SourceType { Fertilizer1, Fertilizer2, Fertilizer3 };
     public SourceType sourceType1;
     public SourceType sourceType2;
     public SourceType sourceType3;
@@ -49,19 +54,17 @@ public class Converter : MonoBehaviour, ISaveable
     [SerializeField][Range(-2f, 2f)] private float paddingZ;
 
     private Vector3 scaleFactor;
-
-    private void OnEnable()
-    {
-        _collider = GetComponent<Collider>();
-
-        StartCoroutine(Consume());
-        StartCoroutine(Convert());
-        UpdateUI();
-        SetScaleFactor();
-    }
+    private GameObject _player;
+    private Collector _playerCollector;
+    private int waterInSoil = 0;
 
     private void Start()
     {
+        _player = GameObject.FindGameObjectWithTag("Player");
+        _playerCollector = _player.GetComponent<Collector>();
+        _collider = GetComponent<Collider>();
+        WarningUIs();
+
         for (int i = 0; i < workers.Length; i++)
         {
             if (workers[i] != null)
@@ -73,6 +76,15 @@ public class Converter : MonoBehaviour, ISaveable
             else
                 Debug.Log("Worker slot is empty !");
         }
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(GetWatered());
+        StartCoroutine(Consume());
+        StartCoroutine(Convert());
+        UpdateUI();
+        SetScaleFactor();
+        WarningUIs();
     }
 
     private void OnDisable()
@@ -93,6 +105,33 @@ public class Converter : MonoBehaviour, ISaveable
         if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Worker"))
         {
             collectorList.Remove(other.GetComponent<Collector>());
+        }
+    }
+
+    IEnumerator GetWatered()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(0.2f);
+            if (ArifGDK.DistanceCollider(this.gameObject, _player, 2))
+            {
+                if (waterInSoil < 1000 && _playerCollector.waterLiter > 0)
+                {
+                    _playerCollector.waterLiter--;
+                    waterInSoil += 100;
+                    ArifGDK.FillImage(waterImage, waterInSoil, 1000);
+                }
+            }
+
+            if (endProductList.Count == capacity)
+                itsFullWarn.SetActive(true);
+            else
+                itsFullWarn.SetActive(false);
+
+            if (waterInSoil <= 0)
+                needWaterWarn.SetActive(true);
+            else
+                needWaterWarn.SetActive(false);
         }
     }
 
@@ -167,41 +206,34 @@ public class Converter : MonoBehaviour, ISaveable
         while (true)
         {
             yield return new WaitForSeconds(1 / convertRate);
-            if (sourceNeed == SourceNeed.One && currentSource1 > 0)
+            if (waterInSoil > 0)
             {
-                currentSource1--;
-                UpdateUI();
-                if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
-            }
-            if (sourceNeed == SourceNeed.Two && currentSource1 > 0 && currentSource2 > 0)
-            {
-                currentSource1--;
-                currentSource2--;
-                UpdateUI();
-                if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
-            }
-            if (sourceNeed == SourceNeed.Three && currentSource1 > 0 && currentSource2 > 0 && currentSource3 > 0)
-            {
-                currentSource1--;
-                currentSource2--;
-                currentSource3--;
-                UpdateUI();
-                if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
+                if (sourceNeed == SourceNeed.One && currentSource1 > 0)
+                {
+                    waterInSoil--;
+                    currentSource1--;
+                    UpdateUI();
+                    if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
+                }
+                if (sourceNeed == SourceNeed.Two && currentSource1 > 0 && currentSource2 > 0)
+                {
+                    waterInSoil--;
+                    currentSource1--;
+                    currentSource2--;
+                    UpdateUI();
+                    if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
+                }
+                if (sourceNeed == SourceNeed.Three && currentSource1 > 0 && currentSource2 > 0 && currentSource3 > 0)
+                {
+                    waterInSoil--;
+                    currentSource1--;
+                    currentSource2--;
+                    currentSource3--;
+                    UpdateUI();
+                    if (endProductList.Count < capacity) SpawnAtRandomSpawnPoint();
+                }
             }
         }
-    }
-
-    private void ProduceEndProduct()
-    {
-        int rowCount = endProductList.Count / stackLimit;
-        GameObject temp = ObjectPooler.Instance.SpawnFromPool(ArifGDK.ToTitleCase(endProduct.ToString()), spawnPoint.transform.position, 
-                                                                                                          spawnPoint.transform.rotation);
-        temp.transform.DOShakeScale(0.2f, 0.1f);
-        temp.transform.position = new Vector3(spawnPoint.transform.position.x + (float)(rowCount * paddingX),
-                                             (endProductList.Count % stackLimit) * paddingY,
-                                             spawnPoint.transform.position.z + (float)(rowCount * paddingZ));
-        temp.transform.SetParent(spawnPoint.transform);
-        endProductList.Add(temp);
     }
 
     void SpawnAtRandomSpawnPoint()
@@ -226,11 +258,10 @@ public class Converter : MonoBehaviour, ISaveable
         Transform spawnLocation = spawnPoints[index];
         GameObject fruit = ObjectPooler.Instance.SpawnFromPool(ArifGDK.ToTitleCase(endProduct.ToString()), spawnLocation.position,
                                                                                                            spawnLocation.rotation);
-        //fruit.transform.DOScale(new Vector3(0.5f, 0.5f, 0.5f), 1f);
         fruit.transform.SetParent(spawnLocation);
         endProductList.Add(fruit);
         fruit.transform.localScale = scaleFactor;
-        fruit.transform.DOShakeScale(0.3f, 0.1f);
+        fruit.transform.DOShakeScale(0.3f, 0.25f);
         usedSpawnPoints[index] = true; // Mark spawn point as having been used
         spawnInfo.Add(index);
     }
@@ -245,11 +276,10 @@ public class Converter : MonoBehaviour, ISaveable
         if (endProduct == EndProduct.Apple)
             scaleFactor = new Vector3(0.5f, 0.5f, 0.5f);
         else if (endProduct == EndProduct.Orange)
-            scaleFactor = Vector3.one;
+            scaleFactor = new Vector3(2f, 2f, 2f);
         else if (endProduct == EndProduct.Banana)
             scaleFactor = Vector3.one;
     }
-
 
     private void UpdateUI()
     {
@@ -263,6 +293,11 @@ public class Converter : MonoBehaviour, ISaveable
             sourceText3.text = currentSource3.ToString();
     }
 
+    private void WarningUIs()
+    {
+        itsFullWarn.transform.DOScale(new Vector3(2, 2, 2), 1).SetLoops(-1, LoopType.Yoyo);
+        needWaterWarn.transform.DOScale(new Vector3(2f, 2f, 2f), 1).SetLoops(-1, LoopType.Yoyo);
+    }
 
     #region Save System
 

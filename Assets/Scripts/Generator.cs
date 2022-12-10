@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Generator : MonoBehaviour, ISaveable
@@ -24,6 +25,16 @@ public class Generator : MonoBehaviour, ISaveable
     private void Start()
     {
         StartCoroutine(Generate());
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(Generate());
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     IEnumerator Generate()

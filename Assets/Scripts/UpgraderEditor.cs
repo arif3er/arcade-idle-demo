@@ -1,5 +1,6 @@
-using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
 
 [CustomEditor(typeof(Upgrader))]
 public class UpgraderEditor : Editor
@@ -249,3 +250,4 @@ public class UpgraderEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

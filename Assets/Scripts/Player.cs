@@ -1,8 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour, ISaveable
 {
@@ -12,8 +13,10 @@ public class Player : MonoBehaviour, ISaveable
     private Collector _collector;
 
     [SerializeField] private TextMeshProUGUI moneyText;
+    [SerializeField] private GameObject fullWarn;
+    [SerializeField] private Image waterCanImage;
 
-    public int currenetMoney = 1000;
+    public int currentMoney = 1000;
 
     private void Awake()
     {
@@ -24,32 +27,45 @@ public class Player : MonoBehaviour, ISaveable
 
         _controller = GetComponent<PlayerController>();
         _collector = GetComponent<Collector>();
-        UpdateMoneyText();
+        UpdateInventoryText();
+        fullWarn.transform.DOScale(new Vector3(1f, 1f, 1f), 1).SetLoops(-1, LoopType.Yoyo);
+    }
+
+    private void Update()
+    {
+        if (_collector.backpack.Count == _collector.capacity)
+            fullWarn.SetActive(true);
+        else
+            fullWarn.SetActive(false);
+
+        fullWarn.transform.position = this.transform.position + new Vector3(0, 2, 0);
+
+        ArifGDK.FillImage(waterCanImage, _collector.waterLiter, 100);
     }
 
     public void AddMoney(int amount)
     {
-        currenetMoney += amount;
-        UpdateMoneyText();
+        currentMoney += amount;
+        UpdateInventoryText();
     }
 
     public void SpendMoney(int amount)
     {
-        if (currenetMoney >= amount)
+        if (currentMoney >= amount)
         {
-            currenetMoney -= amount;
-            UpdateMoneyText();
+            currentMoney -= amount;
+            UpdateInventoryText();
         }
 
-        if (currenetMoney < amount)
+        if (currentMoney < amount)
         {
             Debug.Log("Dont have enough money !");
         }
     }
 
-    public void UpdateMoneyText()
+    public void UpdateInventoryText()
     {
-        moneyText.text = "$ " + currenetMoney.ToString();
+        moneyText.text = "$ " + currentMoney.ToString();
     }
 
     #region Saving System
@@ -62,6 +78,7 @@ public class Player : MonoBehaviour, ISaveable
         public float posZ;
 
         public int currentMoney;
+
         public float playerSpeed;
         public float collectRate;
         public float capacity;
@@ -74,7 +91,7 @@ public class Player : MonoBehaviour, ISaveable
             posX = transform.position.x,
             posY = transform.position.y,
             posZ = transform.position.z,
-            currentMoney = currenetMoney,
+            currentMoney = currentMoney,
             playerSpeed = _controller.playerSpeed,
             collectRate = _collector.collectRate,
             capacity = _collector.capacity
@@ -87,7 +104,9 @@ public class Player : MonoBehaviour, ISaveable
         var posData = new Vector3(saveData.posX, saveData.posY, saveData.posZ);
 
         transform.position = posData;
-        currenetMoney = saveData.currentMoney;
+
+        currentMoney = saveData.currentMoney;
+
         _controller.playerSpeed = saveData.playerSpeed;
         _collector.collectRate = saveData.collectRate;
         _collector.capacity = saveData.capacity;

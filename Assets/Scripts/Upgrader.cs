@@ -292,7 +292,7 @@ public class Upgrader : MonoBehaviour
 
     public bool CheckMoney(int price, string tag, Vector3 position)
     {
-        if (Player.Instance.currenetMoney < price)
+        if (Player.Instance.currentMoney < price)
         {
             moneyNeedWarnEffect.SetActive(true);
             moneyNeedWarnEffect.transform.position = new Vector3(position.x + 70, position.y, position.z);
@@ -328,6 +328,8 @@ public class Upgrader : MonoBehaviour
     public void GetIn(GameObject upgrader, GameObject panel)
     {
         CharacterController cc = player.GetComponent<CharacterController>();
+        CameraFollower cf = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraFollower>();
+        cf.positionOffset.y = 15;
         cc.enabled = false;
         panel.SetActive(true);
     }
@@ -335,7 +337,9 @@ public class Upgrader : MonoBehaviour
     public void GetOut(GameObject upgrader)
     {
         CharacterController cc = player.GetComponent<CharacterController>();
-        Vector3 getOutPos = upgrader.transform.position + new Vector3(0,0,4f);
+        CameraFollower cf = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraFollower>();
+        cf.positionOffset.y = 20;
+        Vector3 getOutPos = upgrader.transform.position + new Vector3(0,0,-4f);
         Tween tween = player.transform.DOMove(getOutPos, 0.5f);
         tween.OnComplete(() => { cc.enabled = true;});
         Debug.DrawLine(player.transform.position, getOutPos);

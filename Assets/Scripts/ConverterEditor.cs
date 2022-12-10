@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 
 [CustomEditor(typeof(Converter))]
@@ -16,6 +17,10 @@ public class ConverterEditor : Editor
     SerializedProperty sourceText1;
     SerializedProperty sourceText2;
     SerializedProperty sourceText3;
+
+    SerializedProperty itsFullWarn;
+    SerializedProperty needWaterWarn;
+    SerializedProperty waterImage;
 
     SerializedProperty sourceNeed;
     SerializedProperty sourceType1;
@@ -57,6 +62,10 @@ public class ConverterEditor : Editor
         sourceText2 = serializedObject.FindProperty("sourceText2");
         sourceText3 = serializedObject.FindProperty("sourceText3");
 
+        itsFullWarn = serializedObject.FindProperty("itsFullWarn");
+        needWaterWarn = serializedObject.FindProperty("needWaterWarn");
+        waterImage = serializedObject.FindProperty("waterImage");
+
         endProduct = serializedObject.FindProperty("endProduct");
 
         sourceNeed = serializedObject.FindProperty("sourceNeed");
@@ -84,6 +93,13 @@ public class ConverterEditor : Editor
     {
         Converter _converter = (Converter)target;
         serializedObject.Update();
+
+        EditorGUILayout.PropertyField(waterImage);
+        EditorGUILayout.Space(1);
+        EditorGUILayout.PropertyField(needWaterWarn);
+        EditorGUILayout.Space(1);
+        EditorGUILayout.PropertyField(itsFullWarn);
+        EditorGUILayout.Space(1);
 
         EditorGUILayout.PropertyField(endProduct);
         EditorGUILayout.Space(1);
@@ -168,3 +184,4 @@ public class ConverterEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

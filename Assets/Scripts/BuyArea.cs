@@ -54,10 +54,10 @@ public class BuyArea : MonoBehaviour, ISaveable
                 lockedObject.transform.DOShakeScale(0.5f, 1);
                 gameObject.SetActive(false);
             }
-            if (inArea && Player.Instance.currenetMoney >= (moneyNeed / 100) && moneySpended < moneyNeed)
+            if (inArea && Player.Instance.currentMoney >= (moneyNeed / 100) && moneySpended < moneyNeed)
             {
                 Player.Instance.SpendMoney((moneyNeed / 100));
-                Player.Instance.UpdateMoneyText();
+                Player.Instance.UpdateInventoryText();
                 moneySpended += (moneyNeed / 100);
                 UpdateUI(moneySpended, moneyNeed);
             }

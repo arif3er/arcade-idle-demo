@@ -6,6 +6,7 @@ using UnityEngine;
 public class Collector : MonoBehaviour
 {
     public List<GameObject> backpack = new List<GameObject>();
+    public int waterLiter;
 
     [SerializeField] private Transform spawnPoint;
 

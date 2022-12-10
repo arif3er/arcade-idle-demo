@@ -12,7 +12,7 @@ public class PlayerData
 
     public PlayerData(Player player, PlayerController playerController, Collector collector) 
     {
-        currentMoney = player.currenetMoney;
+        currentMoney = player.currentMoney;
         playerSpeed = playerController.playerSpeed;
         collectRate = collector.collectRate;
         capacity = collector.capacity;
