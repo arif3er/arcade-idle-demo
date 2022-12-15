@@ -9,6 +9,8 @@ public class Upgrader : MonoBehaviour
     public static Upgrader Instance { get; private set; }
 
     // Colliding
+    public GameObject _ControllerPanel;
+
     private List<GameObject> shopList = new List<GameObject>();
     public GameObject playerUpgradeShop;
     public GameObject workerUpgradeShop;
@@ -85,7 +87,7 @@ public class Upgrader : MonoBehaviour
     {
         for (int i = 0; i < shopList.Count; i++)
         {
-            if (ArifGDK.DistanceCollider(shopList[i], player.gameObject, 3) && shopList[i].activeInHierarchy)
+            if (ArifHelpers.DistanceCollider(shopList[i], player.gameObject, 3) && shopList[i].activeInHierarchy)
                 GetIn(shopList[i], panelList[i]);
             else
                 panelList[i].SetActive(false);

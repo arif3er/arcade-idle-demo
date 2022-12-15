@@ -848,7 +848,7 @@ PrefabInstance:
       objectReference: {fileID: 2564205952265315714}
     - target: {fileID: 4699066680215934089, guid: 0f87c52ed58829442a6001910e8b9ba0, type: 3}
       propertyPath: m_Text
-      value: WP008
+      value: WP024
       objectReference: {fileID: 0}
     - target: {fileID: 4699066681116455748, guid: 0f87c52ed58829442a6001910e8b9ba0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -860,7 +860,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4699066681116455768, guid: 0f87c52ed58829442a6001910e8b9ba0, type: 3}
       propertyPath: m_Name
-      value: WP008
+      value: WP024
       objectReference: {fileID: 0}
     - target: {fileID: 8363822885350335832, guid: 0f87c52ed58829442a6001910e8b9ba0, type: 3}
       propertyPath: m_RootOrder
@@ -954,7 +954,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3829243471455734058, guid: 959348cb706826941bf2fdb5d45cc53a, type: 3}
       propertyPath: m_Name
-      value: WP009
+      value: WP025
       objectReference: {fileID: 0}
     - target: {fileID: 3829243471455734070, guid: 959348cb706826941bf2fdb5d45cc53a, type: 3}
       propertyPath: m_RootOrder
@@ -1002,7 +1002,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3829243472878939899, guid: 959348cb706826941bf2fdb5d45cc53a, type: 3}
       propertyPath: m_Text
-      value: WP009
+      value: WP025
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 959348cb706826941bf2fdb5d45cc53a, type: 3}

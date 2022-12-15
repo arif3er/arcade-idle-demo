@@ -21,6 +21,7 @@ public class ConverterEditor : Editor
     SerializedProperty itsFullWarn;
     SerializedProperty needWaterWarn;
     SerializedProperty waterImage;
+    SerializedProperty waterParticle;
 
     SerializedProperty sourceNeed;
     SerializedProperty sourceType1;
@@ -44,7 +45,7 @@ public class ConverterEditor : Editor
     SerializedProperty paddingX;
     SerializedProperty paddingZ;
 
-    bool quality,positioning, sourceSetup, waypointSetup = false;
+    bool quality,positioning, sourceSetup, waypointSetup, visuals = false;
     #endregion
 
     private void OnEnable()
@@ -65,6 +66,7 @@ public class ConverterEditor : Editor
         itsFullWarn = serializedObject.FindProperty("itsFullWarn");
         needWaterWarn = serializedObject.FindProperty("needWaterWarn");
         waterImage = serializedObject.FindProperty("waterImage");
+        waterParticle = serializedObject.FindProperty("waterParticle");
 
         endProduct = serializedObject.FindProperty("endProduct");
 
@@ -93,13 +95,6 @@ public class ConverterEditor : Editor
     {
         Converter _converter = (Converter)target;
         serializedObject.Update();
-
-        EditorGUILayout.PropertyField(waterImage);
-        EditorGUILayout.Space(1);
-        EditorGUILayout.PropertyField(needWaterWarn);
-        EditorGUILayout.Space(1);
-        EditorGUILayout.PropertyField(itsFullWarn);
-        EditorGUILayout.Space(1);
 
         EditorGUILayout.PropertyField(endProduct);
         EditorGUILayout.Space(1);
@@ -154,6 +149,20 @@ public class ConverterEditor : Editor
         EditorGUILayout.EndFoldoutHeaderGroup();
         EditorGUILayout.Space(5);
 
+        visuals = EditorGUILayout.BeginFoldoutHeaderGroup(visuals, "Visuals");
+        if (visuals)
+        {
+            EditorGUILayout.PropertyField(waterImage);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(needWaterWarn);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(itsFullWarn);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(waterParticle);
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
+        EditorGUILayout.Space(3);
+
         positioning = EditorGUILayout.BeginFoldoutHeaderGroup(positioning, "Positioning");
         if (positioning)
         {
@@ -183,5 +192,7 @@ public class ConverterEditor : Editor
 
         serializedObject.ApplyModifiedProperties();
     }
+
+
 }
 #endif

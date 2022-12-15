@@ -40,7 +40,7 @@ public class Player : MonoBehaviour, ISaveable
 
         fullWarn.transform.position = this.transform.position + new Vector3(0, 2, 0);
 
-        ArifGDK.FillImage(waterCanImage, _collector.waterLiter, 100);
+        ArifHelpers.FillImage(waterCanImage, _collector.waterLiter, 100);
     }
 
     public void AddMoney(int amount)

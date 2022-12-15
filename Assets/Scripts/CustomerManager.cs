@@ -18,7 +18,7 @@ public class CustomerManager : MonoBehaviour
     {
         for (int i = 0; i < customerList.Count; i++)
         {
-            //yield return new WaitForSeconds(Random.Range(5, 10));
+            yield return new WaitForSeconds(Random.Range(1,3));
             customerList[i].gameObject.SetActive(true);
         }
         yield break;

@@ -12,6 +12,7 @@ public class ShopManager : MonoBehaviour
     private List<Collector> collectorList = new List<Collector>();
 
     public GameObject sellWaypoint;
+    public ParticleSystem _particle;
     private Collider _collider;
 
     public string fruitName;
@@ -67,18 +68,18 @@ public class ShopManager : MonoBehaviour
         }
     }
     
-    public void Sell()
+    public bool Sell()
     {
         if (currentFruit > 0)
         {
             currentFruit--;
             UpdateUI();
             Player.Instance.AddMoney(fruitPrice);
+            _particle.Play();
+            return true;
         }
         else
-        {
-            Debug.Log("No fruit left.");
-        }
+            return false;
     }
 
     private void UpdateUI()

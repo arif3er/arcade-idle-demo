@@ -20,6 +20,7 @@ TagManager:
   - Fertilizer1
   - Fertilizer2
   - Fertilizer3
+  - Money
   layers:
   - Default
   - TransparentFX

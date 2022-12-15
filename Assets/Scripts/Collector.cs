@@ -137,13 +137,6 @@ public class Collector : MonoBehaviour
             backpack[i].transform.localPosition = new Vector3(0, paddingY * i, 0);
         }
     }
-
-    public void RemoveLast()
-    {
-        backpack[backpack.Count - 1].gameObject.SetActive(false);
-        backpack.RemoveAt(backpack.Count - 1);
-        ReOrder();
-    }
         
     public void RemoveOne(GameObject resource)
     {

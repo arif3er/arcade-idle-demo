@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
+    
+    public Animator animator;
 
     private PlayerInput playerInput;
 
@@ -71,10 +73,14 @@ public class PlayerController : MonoBehaviour
         if (move != Vector3.zero)
         {
             isMoving = true;
+            animator.SetBool("IsMoving", true);
             gameObject.transform.forward = move;
         }
         else
+        {
             isMoving = false;
+            animator.SetBool("IsMoving", false);
+        }
 
         // Changes the height position of the player..
         /*

@@ -5,12 +5,21 @@ public class Customer : MonoBehaviour
 {
     private FollowPath _followPath;
     private ShopManager _shopManager;
+
+    [SerializeField] 
+    private GameObject[] shops;
+    [SerializeField]
+    private GameObject roadEnd;
     public Transform _spawnPoint;
 
-    private MeshRenderer _meshRenderer;
+    public ParticleSystem _angryParticle;
+    public ParticleSystem _happyParticle;
+    private SkinnedMeshRenderer _meshRenderer;
+    private Animator _animator;
 
     public int buyChance = 50;
     public int random;
+    public int randomShop;
     public bool isFull;
 
     private Color[] colors = new Color[5];
@@ -18,30 +27,74 @@ public class Customer : MonoBehaviour
     private void Start()
     {
         Physics.IgnoreCollision(Player.Instance.GetComponent<Collider>(), GetComponent<Collider>());
-        _meshRenderer = GetComponent<MeshRenderer>();
+        _meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         _followPath = GetComponent<FollowPath>();
         SetColors();
         random = Random.Range(0, 100);
+    }
+
+    private void OnEnable()
+    {
+        _animator = GetComponent<Animator>();
+        _animator.SetInteger("WalkType", Random.Range(1, 4));
         StartCoroutine(BuyOrNot());
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnDisable()
     {
-        if (other.gameObject.CompareTag("Shop"))
+        StopAllCoroutines();
+    }
+
+    private IEnumerator RoadEndCheck()
+    {
+        while (true)
         {
-            _shopManager = other.GetComponentInParent<ShopManager>();
-            _shopManager.Sell();
-            isFull = true;
+            yield return ArifHelpers.GetWait(0.1f);
+
+            if (ArifHelpers.DistanceCollider(this.gameObject, roadEnd, 3f))
+            {
+                _meshRenderer.enabled = false;
+                _meshRenderer.material.color = colors[Random.Range(0, 5)];
+                _followPath.speed = 20;
+                random = Random.Range(0, 100);
+                _followPath.GoTo(0);
+                isFull = false;
+                StartCoroutine(RespawnCustomer());
+                yield break;
+            }
         }
-        if (other.gameObject.CompareTag("RoadEnd"))
+    }
+
+    private IEnumerator ShopDistanceCheck()
+    {
+        while (true)
         {
-            _meshRenderer.enabled = false;
-            _meshRenderer.material.color = colors[Random.Range(0,5)];
-            _followPath.speed = 20;
-            random = Random.Range(0, 100);
-            _followPath.GoTo(0);
-            isFull = false;
-            StartCoroutine(RespawnCustomer());
+            yield return ArifHelpers.GetWait(0.1f);
+
+            foreach (var go in shops)
+            {
+                if (ArifHelpers.DistanceCollider(this.gameObject, go, 4.5f))
+                {
+                    _shopManager = go.GetComponentInParent<ShopManager>();
+                    if (_shopManager.Sell())
+                    {
+                        _animator.SetBool("IsShopping", true);
+                        yield return ArifHelpers.GetWait(2.5f);
+                        _happyParticle.Play();
+                        _animator.SetBool("IsShopping", false);
+                    }
+                    else
+                    {
+                        _animator.SetBool("IsShopping", true);
+                        yield return ArifHelpers.GetWait(2.5f);
+                        _angryParticle.Play();
+                        _animator.SetBool("IsShopping", false);
+                    }
+
+                    isFull = true;
+                    yield break;
+                }
+            }
         }
     }
 
@@ -53,12 +106,14 @@ public class Customer : MonoBehaviour
 
             if (random <= buyChance)
             {
-                _followPath.GoTo(3);
+                randomShop = Random.Range(3, 6);
+                _followPath.GoTo(randomShop);
                 StartCoroutine(Shopping());
                 yield break;
             }
             else
             {
+                StartCoroutine(RoadEndCheck());
                 _followPath.GoTo(2);
                 yield break;
             }
@@ -67,23 +122,25 @@ public class Customer : MonoBehaviour
     
     private IEnumerator RespawnCustomer()
     {
-        yield return new WaitForSeconds(Random.Range(5, 10));
+        yield return ArifHelpers.GetWait(Random.Range(3, 10));
+        _animator.SetInteger("WalkType", Random.Range(1, 4));
         transform.rotation = _spawnPoint.rotation;
-        _followPath.speed = Random.Range(3f, 4f);
+        _followPath.speed = Random.Range(1.75f, 2.25f);
         _meshRenderer.enabled = true;
         StartCoroutine(BuyOrNot());
     }
 
     private IEnumerator Shopping()
     {
+        StartCoroutine(ShopDistanceCheck());
+
         while (true)
         {
-            yield return new WaitForSeconds(0.5f);
-
+            yield return ArifHelpers.GetWait(0.1f);
             if (isFull)
             {
-                yield return new WaitForSeconds(2f);
                 _followPath.GoTo(2);
+                StartCoroutine(RoadEndCheck());
                 yield break;
             }
         }

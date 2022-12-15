@@ -10,6 +10,7 @@ public class BuyArea : MonoBehaviour, ISaveable
     [SerializeField] private GameObject lockedObject;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private Image bar;
+    [SerializeField] private ParticleSystem partyEffect;
 
     public int moneySpended;
     [SerializeField] private int moneyNeed; 
@@ -52,11 +53,16 @@ public class BuyArea : MonoBehaviour, ISaveable
                 StopAllCoroutines();
                 lockedObject.SetActive(true);
                 lockedObject.transform.DOShakeScale(0.5f, 1);
+                partyEffect.transform.position = this.transform.position;
+                partyEffect.Play(inArea);
                 gameObject.SetActive(false);
             }
             if (inArea && Player.Instance.currentMoney >= (moneyNeed / 100) && moneySpended < moneyNeed)
             {
                 Player.Instance.SpendMoney((moneyNeed / 100));
+                GameObject money = ObjectPooler.Instance.SpawnFromPool("Money", Player.Instance.transform.position, this.transform.rotation);
+                Tween tw = money.transform.DOMove(this.transform.position, 0.25f);
+                tw.OnComplete(() => money.SetActive(false));
                 Player.Instance.UpdateInventoryText();
                 moneySpended += (moneyNeed / 100);
                 UpdateUI(moneySpended, moneyNeed);

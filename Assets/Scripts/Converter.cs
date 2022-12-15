@@ -27,6 +27,7 @@ public class Converter : MonoBehaviour, ISaveable
     public GameObject itsFullWarn;
     public GameObject needWaterWarn;
     public Image waterImage;
+    public ParticleSystem waterParticle;
 
     public enum EndProduct { Apple, Orange, Banana };
     public EndProduct endProduct;
@@ -113,14 +114,19 @@ public class Converter : MonoBehaviour, ISaveable
         while (true)
         {
             yield return new WaitForSeconds(0.2f);
-            if (ArifGDK.DistanceCollider(this.gameObject, _player, 2))
+            if (ArifHelpers.DistanceCollider(this.gameObject, _player, 2))
             {
                 if (waterInSoil < 1000 && _playerCollector.waterLiter > 0)
                 {
                     _playerCollector.waterLiter--;
                     waterInSoil += 100;
-                    ArifGDK.FillImage(waterImage, waterInSoil, 1000);
+                    ArifHelpers.FillImage(waterImage, waterInSoil, 1000);
+                    waterParticle.transform.position = this.transform.position;
+                    PlayerController.Instance.animator.SetBool("IsWatering", true);
+                    waterParticle.Play();
                 }
+                else
+                    PlayerController.Instance.animator.SetBool("IsWatering", false);
             }
 
             if (endProductList.Count == capacity)
@@ -256,7 +262,7 @@ public class Converter : MonoBehaviour, ISaveable
     void SpawnAtPoint(int index)
     {
         Transform spawnLocation = spawnPoints[index];
-        GameObject fruit = ObjectPooler.Instance.SpawnFromPool(ArifGDK.ToTitleCase(endProduct.ToString()), spawnLocation.position,
+        GameObject fruit = ObjectPooler.Instance.SpawnFromPool(ArifHelpers.ToTitleCase(endProduct.ToString()), spawnLocation.position,
                                                                                                            spawnLocation.rotation);
         fruit.transform.SetParent(spawnLocation);
         endProductList.Add(fruit);
