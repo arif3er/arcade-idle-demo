@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class BuyArea : MonoBehaviour, ISaveable
 {
+    [SerializeField] GameObject[] dependentObjects;
     [SerializeField] private GameObject lockedObject;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private Image bar;
@@ -24,23 +25,16 @@ public class BuyArea : MonoBehaviour, ISaveable
         UpdateUI(moneySpended, moneyNeed);
     }
 
-    private void OnTriggerStay(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
-        {
-            if (!PlayerController.Instance.isMoving)
-                inArea = true;
-            else
-                inArea = false;
-        }
+            inArea = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
-        {
             inArea = false;
-        }
     }
 
     IEnumerator GetMoney()
@@ -50,18 +44,22 @@ public class BuyArea : MonoBehaviour, ISaveable
             yield return new WaitForSeconds(0.05f);
             if (moneySpended >= moneyNeed)
             {
-                StopAllCoroutines();
                 lockedObject.SetActive(true);
                 lockedObject.transform.DOShakeScale(0.5f, 1);
                 partyEffect.transform.position = this.transform.position;
                 partyEffect.Play(inArea);
+
+                foreach (GameObject obj in dependentObjects)
+                    obj?.SetActive(true);
+
+                StopAllCoroutines();
                 gameObject.SetActive(false);
             }
             if (inArea && Player.Instance.currentMoney >= (moneyNeed / 100) && moneySpended < moneyNeed)
             {
                 Player.Instance.SpendMoney((moneyNeed / 100));
                 GameObject money = ObjectPooler.Instance.SpawnFromPool("Money", Player.Instance.transform.position, this.transform.rotation);
-                Tween tw = money.transform.DOMove(this.transform.position, 0.25f);
+                Tween tw = money.transform.DOMove(this.transform.position, 0.4f);
                 tw.OnComplete(() => money.SetActive(false));
                 Player.Instance.UpdateInventoryText();
                 moneySpended += (moneyNeed / 100);

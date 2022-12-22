@@ -5,12 +5,10 @@ using UnityEngine.UI;
 
 public static class ArifHelpers
 {
-    public static bool DistanceCollider(GameObject g1, GameObject g2, float distance)
+    public static bool DistanceTrigger(GameObject g1, GameObject g2, float distance)
     {
         if (Vector3.Distance(g1.transform.position, g2.transform.position) < distance)
-        {
             return true;
-        }
         else
             return false;
     }
@@ -48,11 +46,6 @@ public static class ArifHelpers
     public static string ToTitleCase(string title)
     {
         return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
-    }
-
-    public static void ListPop<T>(List<T> list)
-    {
-        list.RemoveAt(list.Count - 1);
     }
 
     public static void FillImage(Image image, float current, int need)

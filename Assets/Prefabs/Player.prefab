@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1574059070839690892}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.519, y: 1, z: 0}
+  m_LocalPosition: {x: 4.833547, y: 1.03, z: -7.270955}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -72,6 +72,7 @@ MonoBehaviour:
   isMoving: 0
   playerSpeed: 10
   rotationSpeed: 0
+  gravityValue: -9.81
 --- !u!114 &433756284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,7 +108,7 @@ MonoBehaviour:
   moneyText: {fileID: 0}
   fullWarn: {fileID: 0}
   waterCanImage: {fileID: 0}
-  currentMoney: 10000000
+  currentMoney: 979
 --- !u!114 &2054555248
 MonoBehaviour:
   m_ObjectHideFlags: 0

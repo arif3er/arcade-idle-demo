@@ -3,26 +3,24 @@ using UnityEngine;
 
 public class Customer : MonoBehaviour
 {
-    private FollowPath _followPath;
-    private ShopManager _shopManager;
+    FollowPath _followPath;
+    ShopManager _shopManager;
 
-    [SerializeField] 
-    private GameObject[] shops;
-    [SerializeField]
-    private GameObject roadEnd;
+    [SerializeField] GameObject[] shops;
+    [SerializeField] GameObject roadEnd;
     public Transform _spawnPoint;
 
     public ParticleSystem _angryParticle;
     public ParticleSystem _happyParticle;
-    private SkinnedMeshRenderer _meshRenderer;
-    private Animator _animator;
+    SkinnedMeshRenderer _meshRenderer;
+    Animator _animator;
 
     public int buyChance = 50;
     public int random;
     public int randomShop;
     public bool isFull;
 
-    private Color[] colors = new Color[5];
+    Color[] colors = new Color[5];
 
     private void Start()
     {
@@ -51,7 +49,7 @@ public class Customer : MonoBehaviour
         {
             yield return ArifHelpers.GetWait(0.1f);
 
-            if (ArifHelpers.DistanceCollider(this.gameObject, roadEnd, 3f))
+            if (ArifHelpers.DistanceTrigger(this.gameObject, roadEnd, 3f))
             {
                 _meshRenderer.enabled = false;
                 _meshRenderer.material.color = colors[Random.Range(0, 5)];
@@ -73,7 +71,7 @@ public class Customer : MonoBehaviour
 
             foreach (var go in shops)
             {
-                if (ArifHelpers.DistanceCollider(this.gameObject, go, 4.5f))
+                if (ArifHelpers.DistanceTrigger(this.gameObject, go, 4.5f))
                 {
                     _shopManager = go.GetComponentInParent<ShopManager>();
                     if (_shopManager.Sell())

@@ -14,7 +14,7 @@ public class CameraFollower : MonoBehaviour
 
     void LateUpdate()
     {
-        if (ArifHelpers.DistanceCollider(Player.Instance.gameObject, newLookRefObj.gameObject, 7f))
+        if (ArifHelpers.DistanceTrigger(Player.Instance.gameObject, newLookRefObj.gameObject, 7f))
         {
             positionOffset.x = 5;
             positionOffset.y = 25;

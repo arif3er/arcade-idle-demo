@@ -46,6 +46,7 @@ public class Player : MonoBehaviour, ISaveable
     public void AddMoney(int amount)
     {
         currentMoney += amount;
+        moneyText.gameObject.transform.DOPunchScale(new Vector3(1,1,1), 0.1f);
         UpdateInventoryText();
     }
 
@@ -86,7 +87,7 @@ public class Player : MonoBehaviour, ISaveable
 
     public object CaptureState()
     {
-        return new SaveData
+        return new SaveData 
         {
             posX = transform.position.x,
             posY = transform.position.y,

@@ -15,6 +15,8 @@ public class FollowPath : MonoBehaviour
     private int currentWP = 0;
     private Graph g;
 
+    public bool isPathing;
+
     private void Start()
     {
         SetupThings();
@@ -47,6 +49,8 @@ public class FollowPath : MonoBehaviour
         //If we are not at the end of the path
         if (currentWP < g.getPathLength())
         {
+            isPathing = true;
+
             goal = g.getPathPoint(currentWP).transform;
             Vector3 lookAtGoal = new Vector3(goal.position.x,
                                              this.transform.position.y,
@@ -57,8 +61,10 @@ public class FollowPath : MonoBehaviour
                                                     Quaternion.LookRotation(direction),
                                                     Time.deltaTime * 3 * rotSpeed);
 
-            this.transform.Translate(0,0, speed *Time.deltaTime);
+            this.transform.Translate(0, 0, speed * Time.deltaTime);
         }
+        else
+            isPathing = false;
     }
 
     void SetupThings()

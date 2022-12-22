@@ -15,6 +15,7 @@ public class Worker : MonoBehaviour
 
     public Converter converter;
     private Collector collector;
+    private Animator _animator;
     private FollowPath _followpath;
     public WPManager _wpManager;
     public ShopManager targetShop;
@@ -28,6 +29,7 @@ public class Worker : MonoBehaviour
 
     private void Start()
     {
+        _animator = GetComponentInChildren<Animator>();
         _followpath = GetComponent<FollowPath>();
         generators = GameObject.FindGameObjectsWithTag("Generator").ToList();
         wayPointList = _wpManager.waypoints.ToList();
@@ -47,6 +49,11 @@ public class Worker : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (_followpath.isPathing)
+            _animator.SetBool("IsMoving", true);
+        else
+            _animator.SetBool("IsMoving", false);
+
         if (collector.backpack.Count >= collector.capacity)
             isFull = true;
         else
@@ -99,7 +106,6 @@ public class Worker : MonoBehaviour
                 }
                 if (genTurn == 3)
                 {
-                    Debug.Log("gen3");
                     GameObject closestGeneratorWP = CalculateClosest(generators, "Fertilizer3").GetComponent<Generator>().wayPoint;
                     _followpath?.GoTo(wayPointList.IndexOf(closestGeneratorWP));
                     StartCoroutine(WaitTillFullThenGo(converter.consumeWayPoint));
@@ -115,9 +121,11 @@ public class Worker : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(0.5f);
+
             if (isFull)
             {
                 _followpath?.GoTo(wayPointList.IndexOf(target));
+
                 StartCoroutine(WaitTillEmptyThenGo());
                 yield break;
             }   

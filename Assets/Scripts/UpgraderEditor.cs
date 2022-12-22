@@ -31,11 +31,17 @@ public class UpgraderEditor : Editor
     SerializedProperty playerSpeedPrice;
 
     SerializedProperty playerCollectRateButton;
+    SerializedProperty playerCollectRateButtonAds;
+
     SerializedProperty playerCapacityButton;
+    SerializedProperty playerCapacityButtonAds;
+
     SerializedProperty playerSpeedButton;
+    SerializedProperty playerSpeedButtonAds;
+
 
     // Workers
-    SerializedProperty workerList;
+    SerializedProperty workerToSpawnList;
 
     SerializedProperty workerSpawnPrice;
     SerializedProperty workerCollectRatePrice;
@@ -43,9 +49,17 @@ public class UpgraderEditor : Editor
     SerializedProperty workerSpeedPrice;
 
     SerializedProperty workerCollectRateButton;
+    SerializedProperty workerCollectRateButtonAds;
+
     SerializedProperty workerCapacityButton;
+    SerializedProperty workerCapacityButtonAds;
+
     SerializedProperty workerSpawnButton;
+    SerializedProperty workerSpawnButtonAds;
+
     SerializedProperty workerSpeedButton;
+    SerializedProperty workerSpeedButtonAds;
+
 
     // Generators
     SerializedProperty generatorList;
@@ -54,7 +68,11 @@ public class UpgraderEditor : Editor
     SerializedProperty generatorCapacityPrice;
 
     SerializedProperty generatorRateButton;
+    SerializedProperty generatorRateButtonAds;
+
     SerializedProperty generatorCapacityButton;
+    SerializedProperty generatorCapacityButtonAds;
+
 
     // Converters
     SerializedProperty converterList;
@@ -64,8 +82,13 @@ public class UpgraderEditor : Editor
     SerializedProperty converterConsumeRatePrice;
 
     SerializedProperty converterConsumeRateButton;
+    SerializedProperty converterConsumeRateButtonAds;
+
     SerializedProperty converterCapacityButton;
+    SerializedProperty converterCapacityButtonAds;
+
     SerializedProperty converterConvertRateButton;
+    SerializedProperty converterConvertRateButtonAds;
 
     bool playerBool, workerBool, generatorBool, converterBool, effectBool = false;
     #endregion
@@ -85,7 +108,6 @@ public class UpgraderEditor : Editor
         generatorPanel = serializedObject.FindProperty("generatorPanel");
         converterPanel = serializedObject.FindProperty("converterPanel");
 
-
         // Effects
         moneyNeedWarnEffect = serializedObject.FindProperty("moneyNeedWarnEffect");
         successfulBuyEffect = serializedObject.FindProperty("successfulBuyEffect");
@@ -97,11 +119,17 @@ public class UpgraderEditor : Editor
         playerSpeedPrice = serializedObject.FindProperty("playerSpeedPrice");
 
         playerCollectRateButton = serializedObject.FindProperty("playerCollectRateButton");
+        playerCollectRateButtonAds = serializedObject.FindProperty("playerCollectRateButtonAds");
+
         playerCapacityButton = serializedObject.FindProperty("playerCapacityButton");
+        playerCapacityButtonAds = serializedObject.FindProperty("playerCapacityButtonAds");
+
         playerSpeedButton = serializedObject.FindProperty("playerSpeedButton");
+        playerSpeedButtonAds = serializedObject.FindProperty("playerSpeedButtonAds");
+
 
         // Worker
-        workerList = serializedObject.FindProperty("workerList");
+        workerToSpawnList = serializedObject.FindProperty("workerToSpawnList");
 
         workerSpawnPrice = serializedObject.FindProperty("workerSpawnPrice");
         workerCollectRatePrice = serializedObject.FindProperty("workerCollectRatePrice");
@@ -109,9 +137,17 @@ public class UpgraderEditor : Editor
         workerSpeedPrice = serializedObject.FindProperty("workerSpeedPrice");
 
         workerCollectRateButton = serializedObject.FindProperty("workerCollectRateButton");
+        workerCollectRateButtonAds = serializedObject.FindProperty("workerCollectRateButtonAds");
+
         workerCapacityButton = serializedObject.FindProperty("workerCapacityButton");
+        workerCapacityButtonAds = serializedObject.FindProperty("workerCapacityButtonAds");
+
         workerSpawnButton = serializedObject.FindProperty("workerSpawnButton");
+        workerSpawnButtonAds = serializedObject.FindProperty("workerSpawnButtonAds");
+
         workerSpeedButton = serializedObject.FindProperty("workerSpeedButton");
+        workerSpeedButtonAds = serializedObject.FindProperty("workerSpeedButtonAds");
+
 
         // Generator
         generatorList = serializedObject.FindProperty("generatorList");
@@ -120,7 +156,11 @@ public class UpgraderEditor : Editor
         generatorCapacityPrice = serializedObject.FindProperty("generatorCapacityPrice");
 
         generatorRateButton = serializedObject.FindProperty("generatorRateButton");
+        generatorRateButtonAds = serializedObject.FindProperty("generatorRateButtonAds");
+
         generatorCapacityButton = serializedObject.FindProperty("generatorCapacityButton");
+        generatorCapacityButtonAds = serializedObject.FindProperty("generatorCapacityButtonAds");
+
 
         // Converter
         converterList = serializedObject.FindProperty("converterList");
@@ -130,8 +170,14 @@ public class UpgraderEditor : Editor
         converterConsumeRatePrice = serializedObject.FindProperty("converterConsumeRatePrice");
 
         converterConsumeRateButton = serializedObject.FindProperty("converterConsumeRateButton");
+        converterConsumeRateButtonAds = serializedObject.FindProperty("converterConsumeRateButtonAds");
+
         converterCapacityButton = serializedObject.FindProperty("converterCapacityButton");
+        converterCapacityButtonAds = serializedObject.FindProperty("converterCapacityButtonAds");
+
         converterConvertRateButton = serializedObject.FindProperty("converterConvertRateButton");
+        converterConvertRateButtonAds = serializedObject.FindProperty("converterConvertRateButtonAds");
+
     }
 
     public override void OnInspectorGUI()
@@ -167,9 +213,17 @@ public class UpgraderEditor : Editor
 
             EditorGUILayout.PropertyField(playerCollectRateButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(playerCollectRateButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(playerCapacityButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(playerCapacityButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(playerSpeedButton);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(playerSpeedButtonAds);
             EditorGUILayout.Space(1);
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -192,16 +246,26 @@ public class UpgraderEditor : Editor
 
             EditorGUILayout.PropertyField(workerSpawnButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(workerSpawnButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(workerCollectRateButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(workerCollectRateButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(workerCapacityButton);
             EditorGUILayout.Space(1);
-            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(workerCapacityButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(workerSpeedButton);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(workerSpeedButtonAds);
             EditorGUILayout.Space(1);
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
-        EditorGUILayout.PropertyField(workerList);
+        EditorGUILayout.PropertyField(workerToSpawnList);
 
         generatorBool = EditorGUILayout.BeginFoldoutHeaderGroup(generatorBool, "Generator");
         if (generatorBool)
@@ -217,7 +281,12 @@ public class UpgraderEditor : Editor
 
             EditorGUILayout.PropertyField(generatorRateButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(generatorRateButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(generatorCapacityButton);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(generatorCapacityButtonAds);
             EditorGUILayout.Space(1);
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
@@ -239,9 +308,17 @@ public class UpgraderEditor : Editor
 
             EditorGUILayout.PropertyField(converterConsumeRateButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(converterConsumeRateButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(converterCapacityButton);
             EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(converterCapacityButtonAds);
+            EditorGUILayout.Space(3);
+
             EditorGUILayout.PropertyField(converterConvertRateButton);
+            EditorGUILayout.Space(1);
+            EditorGUILayout.PropertyField(converterConvertRateButtonAds);
             EditorGUILayout.Space(1);
         }
         EditorGUILayout.EndFoldoutHeaderGroup();

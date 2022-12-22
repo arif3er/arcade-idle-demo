@@ -24,7 +24,7 @@ public class WateFiller : MonoBehaviour
         {
             yield return new WaitForSeconds(0.5f);
 
-            if (ArifHelpers.DistanceCollider(this.gameObject, _player, distance))
+            if (ArifHelpers.DistanceTrigger(this.gameObject, _player, distance))
             {
                 Vector3 v3 = new Vector3(_position.x, _position.y + 0.1f, _position.z);
                 Tween tw = this.transform.DOShakeScale(0.3f,0.1f);

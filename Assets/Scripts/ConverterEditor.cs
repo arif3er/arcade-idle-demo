@@ -9,6 +9,7 @@ public class ConverterEditor : Editor
     SerializedProperty workers;
     SerializedProperty consumeWayPoint;
     SerializedProperty convertWayPoint;
+    SerializedProperty waterPoint;
 
     SerializedProperty endProduct;
     SerializedProperty spawnPoint;
@@ -54,6 +55,7 @@ public class ConverterEditor : Editor
         workers = serializedObject.FindProperty("workers");
         consumeWayPoint = serializedObject.FindProperty("consumeWayPoint");
         convertWayPoint = serializedObject.FindProperty("convertWayPoint");
+        waterPoint = serializedObject.FindProperty("waterPoint");
 
         spawnPoint = serializedObject.FindProperty("spawnPoint");
         spawnPoints = serializedObject.FindProperty("spawnPoints");
@@ -166,6 +168,8 @@ public class ConverterEditor : Editor
         positioning = EditorGUILayout.BeginFoldoutHeaderGroup(positioning, "Positioning");
         if (positioning)
         {
+            EditorGUILayout.PropertyField(waterPoint);
+            EditorGUILayout.Space(1);
             EditorGUILayout.PropertyField(spawnPoint);
             EditorGUILayout.Space(1);
 

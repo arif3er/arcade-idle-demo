@@ -11,6 +11,7 @@ public class Converter : MonoBehaviour, ISaveable
 {
     public List<GameObject> endProductList = new List<GameObject>();
     public GameObject consumeWayPoint;
+    public GameObject waterPoint;
     public GameObject convertWayPoint;
     public Worker[] workers = new Worker[0];
 
@@ -70,12 +71,9 @@ public class Converter : MonoBehaviour, ISaveable
         {
             if (workers[i] != null)
             {
-                Upgrader.Instance.workerList.Add(workers[i]);
+                Upgrader.Instance.workerToSpawnList.Add(workers[i]);
                 Upgrader.Instance.CheckCapWorkerSpawn();
-                Debug.Log("Worker " + workers[i].workerName + " added to Upgrader list.");
             }
-            else
-                Debug.Log("Worker slot is empty !");
         }
     }
     private void OnEnable()
@@ -114,20 +112,17 @@ public class Converter : MonoBehaviour, ISaveable
         while (true)
         {
             yield return new WaitForSeconds(0.2f);
-            if (ArifHelpers.DistanceCollider(this.gameObject, _player, 2))
+            if (ArifHelpers.DistanceTrigger(waterPoint, _player, 1.2f) && waterInSoil < 1000 && _playerCollector.waterLiter > 0)
             {
-                if (waterInSoil < 1000 && _playerCollector.waterLiter > 0)
-                {
-                    _playerCollector.waterLiter--;
-                    waterInSoil += 100;
-                    ArifHelpers.FillImage(waterImage, waterInSoil, 1000);
-                    waterParticle.transform.position = this.transform.position;
-                    PlayerController.Instance.animator.SetBool("IsWatering", true);
-                    waterParticle.Play();
-                }
-                else
-                    PlayerController.Instance.animator.SetBool("IsWatering", false);
+                _playerCollector.waterLiter--;
+                waterInSoil += 100;
+                ArifHelpers.FillImage(waterImage, waterInSoil, 1000);
+                waterParticle.transform.position = this.transform.position;
+                PlayerController.Instance.animator.SetBool("IsWatering", true);
+                waterParticle.Play();
             }
+            else
+                PlayerController.Instance.animator.SetBool("IsWatering", false);
 
             if (endProductList.Count == capacity)
                 itsFullWarn.SetActive(true);
@@ -146,23 +141,22 @@ public class Converter : MonoBehaviour, ISaveable
         while (true)
         {
             yield return new WaitForSeconds(1 / consumeRate);
-            
-            if (sourceNeed == SourceNeed.One || sourceNeed == SourceNeed.Two || sourceNeed == SourceNeed.Three)
+            if ((sourceNeed == SourceNeed.Three))
             {
-                foreach (var c in collectorList.ToArray())    
+                foreach (var c in collectorList.ToArray())
                 {
                     Collector collector = c.GetComponent<Collector>();
                     for (int i = collector.backpack.Count - 1; i >= 0; i--)
                     {
                         GameObject go = collector.backpack[i];
-                        if (go.CompareTag(sourceType1.ToString()) && _collider.bounds.Contains(c.gameObject.transform.position))
+                        if (go.CompareTag(sourceType3.ToString()) && _collider.bounds.Contains(c.gameObject.transform.position))
                         {
                             Tween tween = go.transform.DOJump(transform.position, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
                             tween.OnComplete(() => { collector.RemoveOne(go); });
-                            currentSource1++;
+                            currentSource3++;
                             UpdateUI();
+                            yield return new WaitForSeconds(0.5f / consumeRate);
                         }
-                        yield return new WaitForSeconds(0.5f / consumeRate);
                     }
                 }
             }
@@ -185,7 +179,7 @@ public class Converter : MonoBehaviour, ISaveable
                     }
                 }
             }
-            if ((sourceNeed == SourceNeed.Three))
+            if (sourceNeed == SourceNeed.One || sourceNeed == SourceNeed.Two || sourceNeed == SourceNeed.Three)
             {
                 foreach (var c in collectorList.ToArray())
                 {
@@ -193,14 +187,14 @@ public class Converter : MonoBehaviour, ISaveable
                     for (int i = collector.backpack.Count - 1; i >= 0; i--)
                     {
                         GameObject go = collector.backpack[i];
-                        if (go.CompareTag(sourceType3.ToString()) && _collider.bounds.Contains(c.gameObject.transform.position))
+                        if (go.CompareTag(sourceType1.ToString()) && _collider.bounds.Contains(c.gameObject.transform.position))
                         {
                             Tween tween = go.transform.DOJump(transform.position, 1f, 1, 0.2f).SetEase(Ease.InOutSine);
                             tween.OnComplete(() => { collector.RemoveOne(go); });
-                            currentSource3++;
+                            currentSource1++;
                             UpdateUI();
-                            yield return new WaitForSeconds(0.5f / consumeRate);
                         }
+                        yield return new WaitForSeconds(0.5f / consumeRate);
                     }
                 }
             }
@@ -265,9 +259,9 @@ public class Converter : MonoBehaviour, ISaveable
         GameObject fruit = ObjectPooler.Instance.SpawnFromPool(ArifHelpers.ToTitleCase(endProduct.ToString()), spawnLocation.position,
                                                                                                            spawnLocation.rotation);
         fruit.transform.SetParent(spawnLocation);
-        endProductList.Add(fruit);
         fruit.transform.localScale = scaleFactor;
-        fruit.transform.DOShakeScale(0.3f, 0.25f);
+        Tween tw = fruit.transform.DOShakeScale(0.3f, 0.25f);
+        tw.OnComplete(() => { endProductList.Add(fruit); });
         usedSpawnPoints[index] = true; // Mark spawn point as having been used
         spawnInfo.Add(index);
     }

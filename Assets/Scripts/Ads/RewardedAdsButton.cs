@@ -1,16 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Advertisements;
+using System.Collections.Generic;
 
 public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-    [SerializeField] Button _showAdButton;
+    public static RewardedAdsButton Instance { get; private set; }
+
+    public List<Button> showAdButtons = new List<Button>();
     [SerializeField] string _androidAdUnitId = "Rewarded_Android";
     [SerializeField] string _iOSAdUnitId = "Rewarded_iOS";
     string _adUnitId = null; // This will remain null for unsupported platforms
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
+
         // Get the Ad Unit ID for the current platform:
 #if UNITY_IOS
         _adUnitId = _iOSAdUnitId;
@@ -19,7 +27,8 @@ public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAds
 #endif
 
         //Disable the button until the ad is ready to show:
-        _showAdButton.interactable = false;
+        foreach (var button in showAdButtons)
+            button.interactable = false;
     }
 
     // Load content to the Ad Unit:
@@ -38,9 +47,11 @@ public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAds
         if (adUnitId.Equals(_adUnitId))
         {
             // Configure the button to call the ShowAd() method when clicked:
-            _showAdButton.onClick.AddListener(ShowAd);
+            foreach (var button in showAdButtons)
+                button.onClick.AddListener(ShowAd);
             // Enable the button for users to click:
-            _showAdButton.interactable = true;
+            foreach (var button in showAdButtons)
+                button.interactable = true;
         }
     }
 
@@ -48,7 +59,8 @@ public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAds
     public void ShowAd()
     {
         // Disable the button:
-        _showAdButton.interactable = false;
+        foreach (var button in showAdButtons)
+            button.interactable = false;
         // Then show the ad:
         Advertisement.Show(_adUnitId, this);
     }
@@ -60,8 +72,7 @@ public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAds
         {
             Debug.Log("Unity Ads Rewarded Ad Completed");
             // Grant a reward.
-            Player.Instance.AddMoney(33333);
-
+            Debug.Log("Rewarded");
             // Load another ad:
             Advertisement.Load(_adUnitId, this);
         }
@@ -86,6 +97,7 @@ public class RewardedAdsButton : MonoBehaviour, IUnityAdsLoadListener, IUnityAds
     void OnDestroy()
     {
         // Clean up the button listeners:
-        _showAdButton.onClick.RemoveAllListeners();
+        foreach (var button in showAdButtons)
+            button.onClick.RemoveAllListeners();
     }
 }

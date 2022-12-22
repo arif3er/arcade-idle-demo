@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Transform cameraMain;
     private Transform child;
-    //private Vector3 playerVelocity;
+    private Vector3 playerVelocity;
     //private bool groundedPlayer;
 
     public bool isMoving;
@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     public float playerSpeed = 2.0f;
     [SerializeField] private float rotationSpeed = 0f;
     //[SerializeField] private float jumpHeight = 1.0f;
-    //[SerializeField] private float gravityValue = -9.81f;
+    [SerializeField] private float gravityValue = -9.81f;
 
 
     private void Awake()
@@ -87,10 +87,13 @@ public class PlayerController : MonoBehaviour
         if (playerInput.PlayerMain.Jump.triggered && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
-        }
+        }*/
 
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);*/
+        if (controller.enabled)
+        {
+            playerVelocity.y += gravityValue * Time.deltaTime;
+            controller.Move(playerVelocity * Time.deltaTime);
+        }
 
         if (movementInput != Vector2.zero)
         {

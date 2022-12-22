@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Generator : MonoBehaviour, ISaveable
@@ -14,10 +13,10 @@ public class Generator : MonoBehaviour, ISaveable
     public GameObject wayPoint;
     [SerializeField] private Transform spawnPoint;
         
-     public float spawnRate;
-     public float capacity;
+    public float spawnRate;
+    public float capacity;
 
-     public int stackLimit;
+    public int stackLimit;
     [SerializeField][Range(0f, 1f)] float paddingY;
     [SerializeField][Range(-2f, 2f)] float paddingX;
     [SerializeField][Range(-2f, 2f)] float paddingZ;
